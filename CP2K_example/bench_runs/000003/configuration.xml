@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube version="2.1.3">
+  <benchmark file_path_ref="../.." name="cp2k_bench" outpath="..">
+    <comment>CP2K EoCoE benchmark</comment>
+    <parameterset name="compile_param">
+      <parameter mode="text" name="module_list" separator="," type="string">module purge
+        module use /usr/local/software/jureca/OtherStages
+        module load Stages/2016a
+        module load intel-para/2016a
+        module load Libint/1.1.4
+        module load FFTW/3.3.4
+        module load Libxc/.2.2.2</parameter>
+      <parameter mode="text" name="ld" separator="," type="string">$fc</parameter>
+      <parameter mode="python" name="cc" separator="," type="string">{&quot;scalasca&quot;: &quot;scorep mpicc&quot;,
+         &quot;no-vec&quot;: &quot;mpicc -no-simd -no-vec&quot;,
+         &quot;no-fma&quot;: &quot;mpicc -no-fma&quot;}.get(&quot;$compile_mode&quot;,&quot;mpicc&quot;)</parameter>
+      <parameter mode="python" name="fc" separator="," type="string">{&quot;scalasca&quot;: &quot;scorep mpif90&quot;,
+         &quot;no-vec&quot;: &quot;mpif90 -no-simd -no-vec&quot;,
+         &quot;no-fma&quot;: &quot;mpif90 -no-fma&quot;}.get(&quot;$compile_mode&quot;,&quot;mpif90&quot;)</parameter>
+      <parameter mode="text" name="arc_file_version" separator="," type="string">popt</parameter>
+      <parameter mode="text" name="arc_file" separator="," type="string">Jureca</parameter>
+      <parameter mode="text" name="comp_para" separator="," type="string">8</parameter>
+    </parameterset>
+    <parameterset name="systemParameter">
+      <parameter mode="text" name="executable" separator="," type="string">./compile/cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}</parameter>
+      <parameter mode="python" name="tasks" separator="," type="int">$nodes * $taskspernode</parameter>
+      <parameter mode="text" name="postprocess" separator="," type="string"/>
+      <parameter mode="text" name="errlogfile" separator="," type="string">job.err</parameter>
+      <parameter export="true" mode="text" name="OMP_NUM_THREADS" separator="," type="int">$threadspertask</parameter>
+      <parameter mode="text" name="notification" separator="," type="string">ALL</parameter>
+      <parameter mode="python" name="measurement" separator="," type="string">{&quot;scalasca&quot; : &quot;time scalasca -analyze -t -f $scorep_filter_file&quot;,
+         &quot;papi&quot;     : &quot;time scalasca -analyse -f $scorep_filter_file&quot;,
+         &quot;darshan&quot;  : &quot;time LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so DARSHAN_LOG_PATH=. DARSHAN_LOGFILE=darshan.log&quot;}.get(&quot;$mode&quot;,&quot;time&quot;)</parameter>
+      <parameter mode="text" name="use_buffered_io" separator="," type="string">false</parameter>
+      <parameter mode="text" name="queue" separator="," type="string">batch</parameter>
+      <parameter mode="text" name="threadspertask" separator="," type="int">1</parameter>
+      <parameter mode="text" name="timelimit" separator="," type="string">00:30:00</parameter>
+      <parameter mode="python" name="env" separator=";" type="string">{&quot;darshan&quot;: &quot;&quot;&quot;
+                    ${extended_env}
+                    module load darshan-runtime
+                    &quot;&quot;&quot;,
+         &quot;papi&quot;: &quot;&quot;&quot;
+                 ${extended_env}
+                 module load Scalasca
+                 export SCOREP_TOTAL_MEMORY=350MB
+                 export SCOREP_MPI_MAX_COMMUNICATORS=5000
+                 export SCOREP_METRIC_PAPI_PER_PROCESS=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
+                 &quot;&quot;&quot;,
+         &quot;scalasca&quot;: &quot;&quot;&quot;
+                     ${extended_env}
+                     module load Scalasca
+                     unset SCAN_TRACE_FILESYS
+                     export SCOREP_TOTAL_MEMORY=350MB
+                     export SCOREP_MPI_MAX_COMMUNICATORS=5000
+                     export SCAN_ANALYZE_OPTS=--time-correct
+                     &quot;&quot;&quot;}.get(&quot;${mode}&quot;,&quot;&quot;&quot;${extended_env}&quot;&quot;&quot;)</parameter>
+      <parameter mode="text" name="preprocess" separator="," type="string"/>
+      <parameter mode="text" name="args_exec" separator="," type="string">-i $input_file -o $output_file</parameter>
+      <parameter mode="text" name="mail" separator="," type="string"/>
+      <parameter mode="python" name="nodes" separator="," type="int">{&quot;scatter&quot; : 4,
+         &quot;compact&quot; : 4}.get(&quot;${mode}&quot;,2)</parameter>
+      <parameter mode="text" name="extended_env" separator="," type="string">${module_list}
+        export FORT_BUFFERED=$use_buffered_io</parameter>
+      <parameter mode="text" name="outlogfile" separator="," type="string">job.out</parameter>
+      <parameter mode="python" name="taskspernode" separator="," type="int">{&quot;scatter&quot; : 9,
+         &quot;compact&quot; : 9}.get(&quot;${mode}&quot;,18)</parameter>
+    </parameterset>
+    <parameterset name="postprocessing_parameter">
+      <parameter mode="text" name="darshan_log_file_path" separator="," type="string">execute/darshan.log</parameter>
+      <parameter mode="text" name="postprocessing_darshan_modules" separator="," type="string">${module_list}
+        module load darshan-util SciPy-Stack/2016a-Python-2.7.11</parameter>
+      <parameter mode="text" name="scorep_profile_file_path" separator="," type="string">execute/scorep_cp2k_${tasks}_sum/profile.cubex</parameter>
+      <parameter mode="text" name="time_format" separator="," type="string">cmd</parameter>
+      <parameter mode="text" name="scorep_folder_path" separator="," type="string">execute/scorep_*</parameter>
+      <parameter mode="text" name="mem_information_file_path" separator="," type="string">execute/stdout</parameter>
+      <parameter mode="text" name="mem_format" separator="," type="string">slurm</parameter>
+      <parameter mode="text" name="postprocessing_scalasca_modules" separator="," type="string">${module_list}
+        module load Scalasca</parameter>
+      <parameter mode="text" name="time_information_file_path" separator="," type="string">execute/${errlogfile}</parameter>
+      <parameter mode="text" name="scorep_trace_file_path" separator="," type="string">execute/scorep_cp2k_${tasks}_trace/trace.cubex</parameter>
+    </parameterset>
+    <parameterset name="jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter">
+      <parameter mode="text" name="input_dir" separator="," type="string">QS</parameter>
+      <parameter mode="text" name="scorep_filter_file" separator="," type="string">cp2k_scorep.filt</parameter>
+      <parameter mode="text" name="output_file" separator="," type="string">SiH_intensewrite_fast.out</parameter>
+      <parameter mode="text" name="input_file" separator="," type="string">SiH_intensewrite_fast.inp</parameter>
+    </parameterset>
+    <parameterset name="compile_modes">
+      <parameter mode="text" name="mem_mode_compile" separator="," type="string"/>
+      <parameter mode="python" name="run_ref" separator="," type="string">&quot;ref&quot; if &quot;${ref_mode}&quot; == &quot;ref&quot; or (&quot;${darshan_mode}&quot; == &quot;darshan&quot; and &quot;${darshan_mode_compile}&quot; == &quot;&quot;) or (&quot;${mem_mode}&quot; == &quot;mem&quot; and &quot;${mem_mode_compile}&quot; == &quot;&quot;) or \
+                &quot;${scatter_mode}&quot; == &quot;scatter&quot; or &quot;${compact_mode}&quot; == &quot;compact&quot;  or \
+                (&quot;${ref_mode}${darshan_mode}${scalasca_mode}${no_vec_mode}${no_fma_mode}${papi_mode}${mem_mode_compile}&quot; == &quot;&quot;) else &quot;&quot;</parameter>
+      <parameter mode="text" name="darshan_mode_compile" separator="," type="string"/>
+      <parameter mode="python" name="run_scalasca" separator="," type="string">&quot;scalasca&quot; if &quot;${scalasca_mode}&quot; == &quot;scalasca&quot; or &quot;${papi_mode}&quot; == &quot;papi&quot; else &quot;&quot;</parameter>
+      <parameter mode="text" name="no_fma_mode" separator="," type="string"/>
+      <parameter mode="text" name="ref_mode" separator="," type="string"/>
+      <parameter mode="python" name="compile_mode" separator="," type="string">&quot;,&quot;.join([i for i in &quot;${run_ref} ${run_scalasca} ${no_vec_mode} ${no_fma_mode} ${mem_mode_compile} ${darshan_mode_compile}&quot;.split(&quot; &quot;) if len(i) &gt; 0])</parameter>
+      <parameter mode="text" name="no_vec_mode" separator="," type="string"/>
+      <parameter mode="text" name="darshan_mode" separator="," type="string"/>
+      <parameter mode="text" name="mem_mode" separator="," type="string"/>
+      <parameter mode="text" name="scatter_mode" separator="," type="string"/>
+      <parameter mode="text" name="compact_mode" separator="," type="string"/>
+      <parameter mode="text" name="scalasca_mode" separator="," type="string"/>
+      <parameter mode="text" name="papi_mode" separator="," type="string"/>
+    </parameterset>
+    <parameterset name="executeset">
+      <parameter mode="text" name="shared_job_info" separator="," type="string">${shared_folder}/jobid</parameter>
+      <parameter mode="python" name="args_starter" separator="|" type="string">{&quot;scatter&quot; : &quot;--cpu_bind=map_cpu:&quot;+(&quot;,&quot;.join(str(i) for i in range($taskspernode//2) + range(12,12+$taskspernode-$taskspernode//2))),
+         &quot;compact&quot; : &quot;--cpu_bind=map_cpu:&quot;+(&quot;,&quot;.join(str(i) for i in range($taskspernode)))}.get(&quot;${mode}&quot;,&quot;&quot;)</parameter>
+      <parameter mode="text" name="chainjob_needs_submit" separator="," type="string">false</parameter>
+      <parameter mode="text" name="submit" separator="," type="string">sbatch</parameter>
+      <parameter mode="text" name="shared_folder" separator="," type="string">shared</parameter>
+      <parameter mode="text" name="done_file" separator="," type="string">ready</parameter>
+      <parameter mode="text" name="submit_script" separator="," type="string">submit.job</parameter>
+      <parameter mode="text" name="chainjob_script" separator="," type="string">./jureca-chainJobs.sh</parameter>
+      <parameter mode="text" name="starter" separator="," type="string">srun</parameter>
+    </parameterset>
+    <parameterset name="execute_modes">
+      <parameter mode="python" name="mode" separator="," type="string">{&quot;ref&quot; : &quot;,&quot;.join([i for i in &quot;${default_mode} ${ref_mode} ${ref_for_mem_mode} ${ref_for_darshan_mode} ${scatter_mode} ${compact_mode}&quot;.split(&quot; &quot;) if len(i) &gt; 0]),
+       &quot;scalasca&quot; : &quot;,&quot;.join([i for i in &quot;${scalasca_mode} ${papi_mode}&quot;.split(&quot; &quot;) if len(i) &gt; 0])}.get(&quot;${compile_mode}&quot;,&quot;${compile_mode}&quot;)</parameter>
+      <parameter mode="python" name="default_mode" separator="," type="string">&quot;ref&quot; if &quot;${run_ref}&quot; == &quot;ref&quot; and &quot;${ref_mode}${ref_for_mem_mode}${ref_for_darshan_mode}${scatter_mode}${compact_mode}&quot; == &quot;&quot; else &quot;&quot;</parameter>
+      <parameter mode="python" name="ref_for_mem_mode" separator="," type="string">&quot;${mem_mode}&quot; if &quot;${mem_mode_compile}&quot; == &quot;&quot; else &quot;&quot;</parameter>
+      <parameter mode="python" name="first_mode" separator="," type="string">&quot;$mode&quot; == [i for i in &quot;${ref_mode} ${mem_mode} ${darshan_mode} ${scatter_mode} ${compact_mode} ${scalasca_mode} ${papi_mode} ${no_vec_mode} ${no_fma_mode} ref&quot;.split(&quot; &quot;) if len(i) &gt; 0][0]</parameter>
+      <parameter mode="python" name="ref_for_darshan_mode" separator="," type="string">&quot;${darshan_mode}&quot; if &quot;${darshan_mode_compile}&quot; == &quot;&quot; else &quot;&quot;</parameter>
+    </parameterset>
+    <substituteset name="sub_arch_file">
+      <iofile in="cp2k-3.0/arch/${arc_file}.${arc_file_version}" out="cp2k-3.0/arch/${arc_file}.${arc_file_version}" out_mode="w"/>
+      <sub source="FC =">FC = $fc#</sub>
+      <sub source="LD =">LD = $ld#</sub>
+      <sub source="CC =">CC = $cc#</sub>
+    </substituteset>
+    <substituteset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub">
+      <iofile in="${submit_script}.in" out="$submit_script" out_mode="w"/>
+      <sub source="#QUEUE#">$queue</sub>
+      <sub source="#NOTIFY_EMAIL#">$mail</sub>
+      <sub source="#FLAG#">touch $done_file</sub>
+      <sub source="#MEASUREMENT#">$measurement</sub>
+      <sub source="#PREPROCESS#">$preprocess</sub>
+      <sub source="#ENV#">$env</sub>
+      <sub source="#NCPUS#">$taskspernode</sub>
+      <sub source="#STDERRLOGFILE#">$errlogfile</sub>
+      <sub source="#NODES#">$nodes</sub>
+      <sub source="#EXECUTABLE#">$executable</sub>
+      <sub source="#NOTIFICATION_TYPE#">$notification</sub>
+      <sub source="#STDOUTLOGFILE#">$outlogfile</sub>
+      <sub source="#POSTPROCESS#">$postprocess</sub>
+      <sub source="#STARTER#">$starter</sub>
+      <sub source="#TIME_LIMIT#">$timelimit</sub>
+      <sub source="#TASKS#">$tasks</sub>
+      <sub source="#ARGS_STARTER#">$args_starter</sub>
+      <sub source="#NTHREADS#">$threadspertask</sub>
+      <sub source="#BENCHNAME#">${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}</sub>
+      <sub source="#ARGS_EXECUTABLE#">$args_exec</sub>
+    </substituteset>
+    <fileset name="sources">
+      <link>../source/cp2k-3.0.tar.bz2</link>
+      <prepare>tar -xf cp2k-3.0.tar.bz2</prepare>
+      <copy name="cp2k-3.0/makefile.patch">../patches/makefile.patch</copy>
+      <copy name="cp2k-3.0/makedep.patch">../patches/makedep.patch</copy>
+      <prepare work_dir="cp2k-3.0">patch -p0 &lt; makefile.patch</prepare>
+      <prepare work_dir="cp2k-3.0">patch -p0 &lt; makedep.patch</prepare>
+      <copy name="cp2k-3.0/arch/${arc_file}.${arc_file_version}">../arch_files/${arc_file}.${arc_file_version}</copy>
+    </fileset>
+    <fileset name="inputs">
+      <copy>../input/${input_dir}/${input_file}</copy>
+      <copy>scorep_filter/$scorep_filter_file</copy>
+    </fileset>
+    <fileset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles">
+      <copy file_path_ref="/usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca/">${submit_script}.in</copy>
+    </fileset>
+    <fileset name="jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files">
+      <copy file_path_ref=".">extract_metrics.py</copy>
+    </fileset>
+    <patternset name="eocoe_metrics">
+      <pattern mode="pattern" name="mem_vs_cmp" type="float">&quot;mem_vs_cmp&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="memory_footprint" type="string">&quot;mem&quot;: &quot;${jube_pat_wrd}&quot;</pattern>
+      <pattern mode="pattern" name="time_mpi" type="float" unit="s">&quot;time_mpi_no_mpiio&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="io_throughput" type="float" unit="MB/s">&quot;io_throughput&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="time_io" type="float" unit="s">&quot;io_time&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="coll_comm_time" type="float" unit="s">&quot;coll_comm_time&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="avg_io_ac_size_B" type="float" unit="B">&quot;avg_io_ac_size&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="io_calls" type="int">&quot;io_calls&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="p2p_message_size_B" type="int" unit="B">&quot;p2p_message_size&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="time_no_fma" type="int" unit="s">&quot;time_no-fma&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="time_omp" type="float" unit="s">&quot;time_omp&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="fma_eff" type="float">&quot;fma_eff&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="delay_mpi" type="float" unit="s">&quot;time_delay_mpi&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="omp_ratio_dec" type="float">&quot;omp_ratio&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="critical_path_imbalance_ratio" type="float">&quot;critical_path_imbalance_ratio&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="delay_mpi_ratio_dec" type="float">&quot;delay_mpi_ratio&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="delay_omp_ratio_dec" type="float">&quot;delay_omp_ratio&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="io_volume" type="float" unit="MB">&quot;io_volume&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="delay_omp" type="float" unit="s">&quot;time_delay_omp&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="p2p_comm_time" type="float" unit="s">&quot;p2p_comm_time&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="num_coll_calls" type="int">&quot;num_coll_calls&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="IPC" type="float">&quot;PAPI_TOT_INS_RATIO&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="num_p2p_calls" type="int">&quot;num_p2p_calls&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="cache_usage_intensity" type="float">&quot;PAPI_L3_TCH_RATIO&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="vec_eff" type="float">&quot;vec_eff&quot;: ${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="coll_message_size_B" type="int" unit="B">&quot;coll_message_size&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="time" type="int" unit="s">&quot;time_ref&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="time_no_vec" type="int" unit="s">&quot;time_no-vec&quot;: ${jube_pat_int}</pattern>
+      <pattern mode="python" name="delay_mpi_ratio" type="float" unit="%">${delay_mpi_ratio_dec} * 100.0</pattern>
+      <pattern mode="python" name="load_imbalance" type="float" unit="%">${critical_path_imbalance_ratio} * 100.0</pattern>
+      <pattern mode="python" name="avg_io_ac_size" type="float" unit="kB">${avg_io_ac_size_B} / 1024.0</pattern>
+      <pattern mode="python" name="delay_omp_ratio" type="float" unit="%">${delay_omp_ratio_dec} * 100.0</pattern>
+      <pattern mode="python" name="omp_ratio" type="float" unit="%">${omp_ratio_dec} * 100.0</pattern>
+      <pattern mode="python" name="p2p_message_size" type="float" unit="kB">${p2p_message_size_B} / 1024.0</pattern>
+      <pattern mode="python" name="coll_message_size" type="float" unit="kB">${coll_message_size_B} / 1024.0</pattern>
+    </patternset>
+    <step name="compile" suffix="$compile_mode">
+      <use>compile_modes</use>
+      <use>compile_param</use>
+      <use>sources</use>
+      <use>sub_arch_file</use>
+      <do>$module_list</do>
+      <do active="'$compile_mode' == 'scalasca'">module load Scalasca</do>
+      <do work_dir="cp2k-3.0/makefiles">make realclean -j $comp_para ARCH=$arc_file VERSION=$arc_file_version</do>
+      <do work_dir="cp2k-3.0/makefiles">make -j $comp_para ARCH=$arc_file VERSION=$arc_file_version</do>
+    </step>
+    <step depend="compile" name="execute" suffix="$mode">
+      <use>execute_modes</use>
+      <use>executeset</use>
+      <use>jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub</use>
+      <use>jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles</use>
+      <use>inputs</use>
+      <use>systemParameter</use>
+      <use>jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter</use>
+      <do done_file="$done_file">$submit $submit_script</do>
+    </step>
+    <step depend="execute" name="postprocess" shared="shared_dir" suffix="$mode">
+      <use>jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files</use>
+      <use>postprocessing_parameter</use>
+      <do active="$first_mode">cp extract_metrics.py shared_dir</do>
+      <do>python extract_metrics.py -t ${mode} -o shared_dir/metrics_${mode}_time.json time -f ${time_format} ${time_information_file_path}</do>
+      <do active="'$mode' in ['scalasca','papi']">$postprocessing_scalasca_modules</do>
+      <do active="'$mode' in ['scalasca','papi']">scalasca -examine -s ${scorep_folder_path}</do>
+      <do active="'$mode' == 'scalasca'">python extract_metrics.py -o shared_dir/metrics_scalasca.json scalasca ${scorep_trace_file_path}</do>
+      <do active="'$mode' == 'papi'">python extract_metrics.py -o shared_dir/metrics_papi.json papi ${scorep_profile_file_path}</do>
+      <do active="'$mode' == 'darshan'">$postprocessing_darshan_modules</do>
+      <do active="'$mode' == 'darshan'">python extract_metrics.py -o shared_dir/metrics_darshan.json darshan ${darshan_log_file_path}</do>
+      <do active="'$mode' == 'mem'">python extract_metrics.py -o shared_dir/metrics_mem.json mem -f ${mem_format} ${mem_information_file_path}</do>
+      <do shared="true">python extract_metrics.py -o metrics_${jube_benchmark_id}.json combine *.json</do>
+      <do shared="true">cp metrics_${jube_benchmark_id}.json ${jube_benchmark_home}</do>
+    </step>
+    <analyser name="analyse" reduce="True">
+      <analyse step="postprocess">
+        <file use="eocoe_metrics">shared_dir/metrics_${jube_benchmark_id}.json</file>
+      </analyse>
+    </analyser>
+    <result>
+      <use>analyse</use>
+      <table filter="$first_mode" name="result" separator="," style="pretty" transpose="True">
+        <column>time</column>
+        <column format=".1f">time_io</column>
+        <column format=".1f">time_mpi</column>
+        <column format=".1f">mem_vs_cmp</column>
+        <column format=".1f">load_imbalance</column>
+        <column format=".1f">io_volume</column>
+        <column>io_calls</column>
+        <column format=".1f">io_throughput</column>
+        <column format=".1f">avg_io_ac_size</column>
+        <column>num_p2p_calls</column>
+        <column format=".1f">p2p_comm_time</column>
+        <column format=".1f">p2p_message_size</column>
+        <column>num_coll_calls</column>
+        <column format=".1f">coll_comm_time</column>
+        <column format=".1f">coll_message_size</column>
+        <column format=".1f">delay_mpi</column>
+        <column format=".1f">delay_mpi_ratio</column>
+        <column format=".1f">time_omp</column>
+        <column format=".1f">omp_ratio</column>
+        <column format=".1f">delay_omp</column>
+        <column format=".1f">delay_omp_ratio</column>
+        <column>memory_footprint</column>
+        <column format=".2f">cache_usage_intensity</column>
+        <column format=".2f">IPC</column>
+        <column>time_no_vec</column>
+        <column format=".2f">vec_eff</column>
+        <column>time_no_fma</column>
+        <column format=".2f">fma_eff</column>
+      </table>
+    </result>
+  </benchmark>
+</jube>

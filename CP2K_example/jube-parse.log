@@ -1,0 +1,309 @@
+[2017-04-24 17:18:16,238]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:18:16,287]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:18:16,288]:DEBUG:   Remove invalid tags
+[2017-04-24 17:18:16,288]:DEBUG:     Available tags: 
+[2017-04-24 17:18:16,288]:DEBUG:   Remove invalid tags
+[2017-04-24 17:18:16,288]:DEBUG:     Available tags: 
+[2017-04-24 17:18:16,290]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:18:16,291]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:18:16,291]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:18:16,291]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:18:16,291]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:18:16,291]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:18:16,291]:DEBUG:     path: CP2K_example
+[2017-04-24 17:18:16,294]:DEBUG:   Remove invalid tags
+[2017-04-24 17:18:16,294]:DEBUG:     Available tags: 
+[2017-04-24 17:18:16,295]:ERROR: 
+[2017-04-24 17:18:16,295]:ERROR: Remaining include element found, which wasn't replaced (e.g. due to a missing include-path):
+[2017-04-24 17:18:16,295]:ERROR: <include from="eocoe_jube.xml" ... />
+[2017-04-24 17:18:34,266]:DEBUG: Parsing cp2k_jube.xml
+[2017-04-24 17:18:34,274]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:18:34,275]:DEBUG:   Remove invalid tags
+[2017-04-24 17:18:34,275]:DEBUG:     Available tags: 
+[2017-04-24 17:18:34,275]:DEBUG:   Remove invalid tags
+[2017-04-24 17:18:34,275]:DEBUG:     Available tags: 
+[2017-04-24 17:18:34,277]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:18:34,277]:DEBUG:     New path: ./config/SiH
+[2017-04-24 17:18:34,277]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:18:34,277]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:18:34,277]:DEBUG:     path: ./config/SiH
+[2017-04-24 17:18:34,277]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:18:34,277]:DEBUG:     path: .
+[2017-04-24 17:18:34,280]:DEBUG:   Remove invalid tags
+[2017-04-24 17:18:34,280]:DEBUG:     Available tags: 
+[2017-04-24 17:18:34,281]:ERROR: 
+[2017-04-24 17:18:34,281]:ERROR: Remaining include element found, which wasn't replaced (e.g. due to a missing include-path):
+[2017-04-24 17:18:34,281]:ERROR: <include from="eocoe_jube.xml" ... />
+[2017-04-24 17:33:29,191]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:33:29,227]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:33:29,228]:DEBUG:   Remove invalid tags
+[2017-04-24 17:33:29,228]:DEBUG:     Available tags: 
+[2017-04-24 17:33:29,228]:DEBUG:   Remove invalid tags
+[2017-04-24 17:33:29,228]:DEBUG:     Available tags: 
+[2017-04-24 17:33:29,230]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:33:29,231]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:33:29,231]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:33:29,231]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:33:29,231]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:33:29,231]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:33:29,231]:DEBUG:     path: CP2K_example
+[2017-04-24 17:33:29,242]:DEBUG:   Remove invalid tags
+[2017-04-24 17:33:29,242]:DEBUG:     Available tags: 
+[2017-04-24 17:33:29,243]:DEBUG:   Preprocess done
+[2017-04-24 17:33:29,243]:DEBUG:   Preprocess benchmark xml tree
+[2017-04-24 17:33:29,244]:DEBUG:     Searching for type of "jobfiles" in platform.xml
+[2017-04-24 17:33:29,246]:DEBUG:     Searching for type of "executesub" in platform.xml
+[2017-04-24 17:33:29,247]:DEBUG:     Searching for type of "cp2k_parameter" in config.xml
+[2017-04-24 17:33:29,249]:DEBUG:     Searching for type of "postprocessing_files" in eocoe_jube.xml
+[2017-04-24 17:33:29,252]:DEBUG:   Parsing <parameterset name="compile_modes">
+[2017-04-24 17:33:29,252]:DEBUG:     Searching for <parameterset name="compile_modes"> in eocoe_jube.xml
+[2017-04-24 17:33:29,255]:DEBUG:   Parsing <parameterset name="compile_param">
+[2017-04-24 17:33:29,255]:DEBUG:   Parsing <parameterset name="execute_modes">
+[2017-04-24 17:33:29,255]:DEBUG:     Searching for <parameterset name="execute_modes"> in eocoe_jube.xml
+[2017-04-24 17:33:29,258]:DEBUG:   Parsing <parameterset name="systemParameter">
+[2017-04-24 17:33:29,258]:DEBUG:     Searching for <parameterset name="systemParameter"> in platform.xml
+[2017-04-24 17:33:29,260]:DEBUG:   Parsing <parameterset name="executeset">
+[2017-04-24 17:33:29,260]:DEBUG:     Searching for <parameterset name="executeset"> in platform.xml
+[2017-04-24 17:33:29,262]:DEBUG:   Parsing <parameterset name="postprocessing_parameter">
+[2017-04-24 17:33:29,262]:DEBUG:     Searching for <parameterset name="postprocessing_parameter"> in eocoe_jube.xml
+[2017-04-24 17:33:29,265]:DEBUG:   Parsing <parameterset name="jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter">
+[2017-04-24 17:33:29,265]:DEBUG:     Searching for <parameterset name="cp2k_parameter"> in config.xml
+[2017-04-24 17:33:29,266]:DEBUG:   Parsing <substituteset name="sub_arch_file">
+[2017-04-24 17:33:29,266]:DEBUG:   Parsing <substituteset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub">
+[2017-04-24 17:33:29,266]:DEBUG:     Searching for <substituteset name="executesub"> in platform.xml
+[2017-04-24 17:33:29,268]:DEBUG:   Parsing <fileset name="sources">
+[2017-04-24 17:33:29,268]:DEBUG:   Parsing <fileset name="inputs">
+[2017-04-24 17:33:29,268]:DEBUG:   Parsing <fileset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles">
+[2017-04-24 17:33:29,268]:DEBUG:     Searching for <fileset name="jobfiles"> in platform.xml
+[2017-04-24 17:33:29,269]:DEBUG:   Parsing <fileset name="jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files">
+[2017-04-24 17:33:29,269]:DEBUG:     Searching for <fileset name="postprocessing_files"> in eocoe_jube.xml
+[2017-04-24 17:33:29,273]:DEBUG:   Parsing <patternset name="eocoe_metrics">
+[2017-04-24 17:33:29,273]:DEBUG:     Searching for <patternset name="eocoe_metrics"> in eocoe_jube.xml
+[2017-04-24 17:33:29,276]:DEBUG:   Parsing <step name="compile">
+[2017-04-24 17:33:29,276]:DEBUG:   Parsing <step name="execute">
+[2017-04-24 17:33:29,276]:DEBUG:   Parsing <step name="postprocess">
+[2017-04-24 17:33:29,277]:DEBUG:   Parsing <analyser name="analyse">
+[2017-04-24 17:33:29,277]:DEBUG: Start consistency check
+[2017-04-24 17:33:29,277]:DEBUG: Create benchmark directory
+[2017-04-24 17:54:49,198]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:54:49,221]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:54:49,221]:DEBUG:   Remove invalid tags
+[2017-04-24 17:54:49,221]:DEBUG:     Available tags: 
+[2017-04-24 17:54:49,221]:DEBUG:   Remove invalid tags
+[2017-04-24 17:54:49,222]:DEBUG:     Available tags: 
+[2017-04-24 17:54:49,225]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:54:49,226]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:54:49,226]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:54:49,226]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:54:49,226]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:54:49,226]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:54:49,226]:DEBUG:     path: CP2K_example
+[2017-04-24 17:54:49,241]:DEBUG:   Remove invalid tags
+[2017-04-24 17:54:49,241]:DEBUG:     Available tags: 
+[2017-04-24 17:54:49,243]:DEBUG:   Preprocess done
+[2017-04-24 17:54:49,243]:DEBUG:   Preprocess benchmark xml tree
+[2017-04-24 17:54:49,244]:DEBUG:     Searching for type of "jobfiles" in platform.xml
+[2017-04-24 17:54:49,248]:DEBUG:     Searching for type of "executesub" in platform.xml
+[2017-04-24 17:54:49,249]:DEBUG:     Searching for type of "cp2k_parameter" in config.xml
+[2017-04-24 17:54:49,251]:DEBUG:     Searching for type of "postprocessing_files" in eocoe_jube.xml
+[2017-04-24 17:54:49,255]:DEBUG:   Parsing <parameterset name="compile_modes">
+[2017-04-24 17:54:49,255]:DEBUG:     Searching for <parameterset name="compile_modes"> in eocoe_jube.xml
+[2017-04-24 17:54:49,260]:DEBUG:   Parsing <parameterset name="compile_param">
+[2017-04-24 17:54:49,260]:DEBUG:   Parsing <parameterset name="execute_modes">
+[2017-04-24 17:54:49,260]:DEBUG:     Searching for <parameterset name="execute_modes"> in eocoe_jube.xml
+[2017-04-24 17:54:49,265]:DEBUG:   Parsing <parameterset name="systemParameter">
+[2017-04-24 17:54:49,265]:DEBUG:     Searching for <parameterset name="systemParameter"> in platform.xml
+[2017-04-24 17:54:49,268]:DEBUG:   Parsing <parameterset name="executeset">
+[2017-04-24 17:54:49,268]:DEBUG:     Searching for <parameterset name="executeset"> in platform.xml
+[2017-04-24 17:54:49,270]:DEBUG:   Parsing <parameterset name="postprocessing_parameter">
+[2017-04-24 17:54:49,271]:DEBUG:     Searching for <parameterset name="postprocessing_parameter"> in eocoe_jube.xml
+[2017-04-24 17:54:49,275]:DEBUG:   Parsing <parameterset name="jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter">
+[2017-04-24 17:54:49,275]:DEBUG:     Searching for <parameterset name="cp2k_parameter"> in config.xml
+[2017-04-24 17:54:49,276]:DEBUG:   Parsing <substituteset name="sub_arch_file">
+[2017-04-24 17:54:49,276]:DEBUG:   Parsing <substituteset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub">
+[2017-04-24 17:54:49,276]:DEBUG:     Searching for <substituteset name="executesub"> in platform.xml
+[2017-04-24 17:54:49,279]:DEBUG:   Parsing <fileset name="sources">
+[2017-04-24 17:54:49,279]:DEBUG:   Parsing <fileset name="inputs">
+[2017-04-24 17:54:49,279]:DEBUG:   Parsing <fileset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles">
+[2017-04-24 17:54:49,279]:DEBUG:     Searching for <fileset name="jobfiles"> in platform.xml
+[2017-04-24 17:54:49,281]:DEBUG:   Parsing <fileset name="jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files">
+[2017-04-24 17:54:49,281]:DEBUG:     Searching for <fileset name="postprocessing_files"> in eocoe_jube.xml
+[2017-04-24 17:54:49,286]:DEBUG:   Parsing <patternset name="eocoe_metrics">
+[2017-04-24 17:54:49,286]:DEBUG:     Searching for <patternset name="eocoe_metrics"> in eocoe_jube.xml
+[2017-04-24 17:54:49,291]:DEBUG:   Parsing <step name="compile">
+[2017-04-24 17:54:49,291]:DEBUG:   Parsing <step name="execute">
+[2017-04-24 17:54:49,291]:DEBUG:   Parsing <step name="postprocess">
+[2017-04-24 17:54:49,291]:DEBUG:   Parsing <analyser name="analyse">
+[2017-04-24 17:54:49,292]:DEBUG: Start consistency check
+[2017-04-24 17:54:49,292]:DEBUG: Create benchmark directory
+[2017-04-24 17:55:02,612]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:55:02,618]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:55:02,618]:DEBUG:   Remove invalid tags
+[2017-04-24 17:55:02,618]:DEBUG:     Available tags: 
+[2017-04-24 17:55:02,618]:DEBUG:   Remove invalid tags
+[2017-04-24 17:55:02,618]:DEBUG:     Available tags: 
+[2017-04-24 17:55:02,621]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:55:02,621]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:55:02,621]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:55:02,621]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:55:02,621]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:55:02,621]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:55:02,621]:DEBUG:     path: CP2K_example
+[2017-04-24 17:55:02,621]:DEBUG:   Remove invalid tags
+[2017-04-24 17:55:02,621]:DEBUG:     Available tags: 
+[2017-04-24 17:55:02,622]:ERROR: 
+[2017-04-24 17:55:02,622]:ERROR: Remaining include element found, which wasn't replaced (e.g. due to a missing include-path):
+[2017-04-24 17:55:02,622]:ERROR: <include from="eocoe_jube.xml" ... />
+[2017-04-24 17:55:14,096]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:55:14,102]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:55:14,102]:DEBUG:   Remove invalid tags
+[2017-04-24 17:55:14,102]:DEBUG:     Available tags: 
+[2017-04-24 17:55:14,102]:DEBUG:   Remove invalid tags
+[2017-04-24 17:55:14,102]:DEBUG:     Available tags: 
+[2017-04-24 17:55:14,105]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:55:14,105]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:55:14,105]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:55:14,105]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:55:14,105]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:55:14,105]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:55:14,106]:DEBUG:     path: CP2K_example
+[2017-04-24 17:55:14,111]:DEBUG:   Remove invalid tags
+[2017-04-24 17:55:14,111]:DEBUG:     Available tags: 
+[2017-04-24 17:55:14,112]:DEBUG:   Preprocess done
+[2017-04-24 17:55:14,112]:DEBUG:   Preprocess benchmark xml tree
+[2017-04-24 17:55:14,113]:DEBUG:     Searching for type of "jobfiles" in platform.xml
+[2017-04-24 17:55:14,114]:DEBUG:     Searching for type of "executesub" in platform.xml
+[2017-04-24 17:55:14,115]:DEBUG:     Searching for type of "cp2k_parameter" in config.xml
+[2017-04-24 17:55:14,116]:DEBUG:     Searching for type of "postprocessing_files" in eocoe_jube.xml
+[2017-04-24 17:55:14,118]:DEBUG:   Parsing <parameterset name="compile_modes">
+[2017-04-24 17:55:14,118]:DEBUG:     Searching for <parameterset name="compile_modes"> in eocoe_jube.xml
+[2017-04-24 17:55:14,121]:DEBUG:   Parsing <parameterset name="compile_param">
+[2017-04-24 17:55:14,122]:DEBUG:   Parsing <parameterset name="execute_modes">
+[2017-04-24 17:55:14,122]:DEBUG:     Searching for <parameterset name="execute_modes"> in eocoe_jube.xml
+[2017-04-24 17:55:14,124]:DEBUG:   Parsing <parameterset name="systemParameter">
+[2017-04-24 17:55:14,125]:DEBUG:     Searching for <parameterset name="systemParameter"> in platform.xml
+[2017-04-24 17:55:14,126]:DEBUG:   Parsing <parameterset name="executeset">
+[2017-04-24 17:55:14,126]:DEBUG:     Searching for <parameterset name="executeset"> in platform.xml
+[2017-04-24 17:55:14,128]:DEBUG:   Parsing <parameterset name="postprocessing_parameter">
+[2017-04-24 17:55:14,128]:DEBUG:     Searching for <parameterset name="postprocessing_parameter"> in eocoe_jube.xml
+[2017-04-24 17:55:14,131]:DEBUG:   Parsing <parameterset name="jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter">
+[2017-04-24 17:55:14,131]:DEBUG:     Searching for <parameterset name="cp2k_parameter"> in config.xml
+[2017-04-24 17:55:14,131]:DEBUG:   Parsing <substituteset name="sub_arch_file">
+[2017-04-24 17:55:14,132]:DEBUG:   Parsing <substituteset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub">
+[2017-04-24 17:55:14,132]:DEBUG:     Searching for <substituteset name="executesub"> in platform.xml
+[2017-04-24 17:55:14,133]:DEBUG:   Parsing <fileset name="sources">
+[2017-04-24 17:55:14,133]:DEBUG:   Parsing <fileset name="inputs">
+[2017-04-24 17:55:14,134]:DEBUG:   Parsing <fileset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles">
+[2017-04-24 17:55:14,134]:DEBUG:     Searching for <fileset name="jobfiles"> in platform.xml
+[2017-04-24 17:55:14,135]:DEBUG:   Parsing <fileset name="jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files">
+[2017-04-24 17:55:14,135]:DEBUG:     Searching for <fileset name="postprocessing_files"> in eocoe_jube.xml
+[2017-04-24 17:55:14,138]:DEBUG:   Parsing <patternset name="eocoe_metrics">
+[2017-04-24 17:55:14,138]:DEBUG:     Searching for <patternset name="eocoe_metrics"> in eocoe_jube.xml
+[2017-04-24 17:55:14,142]:DEBUG:   Parsing <step name="compile">
+[2017-04-24 17:55:14,142]:DEBUG:   Parsing <step name="execute">
+[2017-04-24 17:55:14,142]:DEBUG:   Parsing <step name="postprocess">
+[2017-04-24 17:55:14,142]:DEBUG:   Parsing <analyser name="analyse">
+[2017-04-24 17:55:14,142]:DEBUG: Start consistency check
+[2017-04-24 17:55:14,142]:DEBUG: Create benchmark directory
+[2017-04-24 17:56:08,786]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:56:08,792]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:56:08,792]:DEBUG:   Remove invalid tags
+[2017-04-24 17:56:08,792]:DEBUG:     Available tags: 
+[2017-04-24 17:56:08,792]:DEBUG:   Remove invalid tags
+[2017-04-24 17:56:08,792]:DEBUG:     Available tags: 
+[2017-04-24 17:56:08,794]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:56:08,794]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:56:08,794]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:56:08,794]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:56:08,794]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:56:08,795]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:56:08,795]:DEBUG:     path: CP2K_example
+[2017-04-24 17:56:08,800]:DEBUG:   Remove invalid tags
+[2017-04-24 17:56:08,800]:DEBUG:     Available tags: 
+[2017-04-24 17:56:08,801]:DEBUG:   Preprocess done
+[2017-04-24 17:56:08,801]:DEBUG:   Preprocess benchmark xml tree
+[2017-04-24 17:56:08,802]:DEBUG:     Searching for type of "jobfiles" in platform.xml
+[2017-04-24 17:56:08,803]:DEBUG:     Searching for type of "executesub" in platform.xml
+[2017-04-24 17:56:08,804]:DEBUG:     Searching for type of "cp2k_parameter" in config.xml
+[2017-04-24 17:56:08,804]:DEBUG:     Searching for type of "postprocessing_files" in eocoe_jube.xml
+[2017-04-24 17:56:08,806]:DEBUG:   Parsing <parameterset name="compile_modes">
+[2017-04-24 17:56:08,806]:DEBUG:     Searching for <parameterset name="compile_modes"> in eocoe_jube.xml
+[2017-04-24 17:56:08,809]:DEBUG:   Parsing <parameterset name="compile_param">
+[2017-04-24 17:56:08,809]:DEBUG:   Parsing <parameterset name="execute_modes">
+[2017-04-24 17:56:08,809]:DEBUG:     Searching for <parameterset name="execute_modes"> in eocoe_jube.xml
+[2017-04-24 17:56:08,812]:DEBUG:   Parsing <parameterset name="systemParameter">
+[2017-04-24 17:56:08,812]:DEBUG:     Searching for <parameterset name="systemParameter"> in platform.xml
+[2017-04-24 17:56:08,813]:DEBUG:   Parsing <parameterset name="executeset">
+[2017-04-24 17:56:08,813]:DEBUG:     Searching for <parameterset name="executeset"> in platform.xml
+[2017-04-24 17:56:08,815]:DEBUG:   Parsing <parameterset name="postprocessing_parameter">
+[2017-04-24 17:56:08,815]:DEBUG:     Searching for <parameterset name="postprocessing_parameter"> in eocoe_jube.xml
+[2017-04-24 17:56:08,818]:DEBUG:   Parsing <parameterset name="jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter">
+[2017-04-24 17:56:08,818]:DEBUG:     Searching for <parameterset name="cp2k_parameter"> in config.xml
+[2017-04-24 17:56:08,818]:DEBUG:   Parsing <substituteset name="sub_arch_file">
+[2017-04-24 17:56:08,818]:DEBUG:   Parsing <substituteset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub">
+[2017-04-24 17:56:08,818]:DEBUG:     Searching for <substituteset name="executesub"> in platform.xml
+[2017-04-24 17:56:08,820]:DEBUG:   Parsing <fileset name="sources">
+[2017-04-24 17:56:08,820]:DEBUG:   Parsing <fileset name="inputs">
+[2017-04-24 17:56:08,820]:DEBUG:   Parsing <fileset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles">
+[2017-04-24 17:56:08,820]:DEBUG:     Searching for <fileset name="jobfiles"> in platform.xml
+[2017-04-24 17:56:08,821]:DEBUG:   Parsing <fileset name="jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files">
+[2017-04-24 17:56:08,821]:DEBUG:     Searching for <fileset name="postprocessing_files"> in eocoe_jube.xml
+[2017-04-24 17:56:08,824]:DEBUG:   Parsing <patternset name="eocoe_metrics">
+[2017-04-24 17:56:08,824]:DEBUG:     Searching for <patternset name="eocoe_metrics"> in eocoe_jube.xml
+[2017-04-24 17:56:08,827]:DEBUG:   Parsing <step name="compile">
+[2017-04-24 17:56:08,827]:DEBUG:   Parsing <step name="execute">
+[2017-04-24 17:56:08,827]:DEBUG:   Parsing <step name="postprocess">
+[2017-04-24 17:56:08,828]:DEBUG:   Parsing <analyser name="analyse">
+[2017-04-24 17:56:08,828]:DEBUG: Start consistency check
+[2017-04-24 17:56:08,828]:DEBUG: Create benchmark directory
+[2017-04-24 17:56:33,636]:DEBUG: Parsing CP2K_example/cp2k_jube.xml
+[2017-04-24 17:56:33,641]:DEBUG:   --> Preprocess run 1 <--
+[2017-04-24 17:56:33,641]:DEBUG:   Remove invalid tags
+[2017-04-24 17:56:33,641]:DEBUG:     Available tags: 
+[2017-04-24 17:56:33,642]:DEBUG:   Remove invalid tags
+[2017-04-24 17:56:33,642]:DEBUG:     Available tags: 
+[2017-04-24 17:56:33,644]:DEBUG:   Parsing <include-path>
+[2017-04-24 17:56:33,644]:DEBUG:     New path: CP2K_example/config/SiH
+[2017-04-24 17:56:33,644]:DEBUG:   Read $JUBE_INCLUDE_PATH
+[2017-04-24 17:56:33,644]:DEBUG:   Preprocess xml tree
+[2017-04-24 17:56:33,644]:DEBUG:     path: CP2K_example/config/SiH
+[2017-04-24 17:56:33,644]:DEBUG:     path: /usr/local/software/jureca/Stages/2016b/software/JUBE/2.1.3/platform/jureca
+[2017-04-24 17:56:33,645]:DEBUG:     path: CP2K_example
+[2017-04-24 17:56:33,650]:DEBUG:   Remove invalid tags
+[2017-04-24 17:56:33,650]:DEBUG:     Available tags: 
+[2017-04-24 17:56:33,651]:DEBUG:   Preprocess done
+[2017-04-24 17:56:33,651]:DEBUG:   Preprocess benchmark xml tree
+[2017-04-24 17:56:33,652]:DEBUG:     Searching for type of "jobfiles" in platform.xml
+[2017-04-24 17:56:33,653]:DEBUG:     Searching for type of "executesub" in platform.xml
+[2017-04-24 17:56:33,654]:DEBUG:     Searching for type of "cp2k_parameter" in config.xml
+[2017-04-24 17:56:33,654]:DEBUG:     Searching for type of "postprocessing_files" in eocoe_jube.xml
+[2017-04-24 17:56:33,657]:DEBUG:   Parsing <parameterset name="compile_modes">
+[2017-04-24 17:56:33,657]:DEBUG:     Searching for <parameterset name="compile_modes"> in eocoe_jube.xml
+[2017-04-24 17:56:33,660]:DEBUG:   Parsing <parameterset name="compile_param">
+[2017-04-24 17:56:33,660]:DEBUG:   Parsing <parameterset name="execute_modes">
+[2017-04-24 17:56:33,660]:DEBUG:     Searching for <parameterset name="execute_modes"> in eocoe_jube.xml
+[2017-04-24 17:56:33,663]:DEBUG:   Parsing <parameterset name="systemParameter">
+[2017-04-24 17:56:33,663]:DEBUG:     Searching for <parameterset name="systemParameter"> in platform.xml
+[2017-04-24 17:56:33,664]:DEBUG:   Parsing <parameterset name="executeset">
+[2017-04-24 17:56:33,664]:DEBUG:     Searching for <parameterset name="executeset"> in platform.xml
+[2017-04-24 17:56:33,666]:DEBUG:   Parsing <parameterset name="postprocessing_parameter">
+[2017-04-24 17:56:33,666]:DEBUG:     Searching for <parameterset name="postprocessing_parameter"> in eocoe_jube.xml
+[2017-04-24 17:56:33,669]:DEBUG:   Parsing <parameterset name="jube_b92ff3fc4e99566347d724dd41648e64_cp2k_parameter">
+[2017-04-24 17:56:33,669]:DEBUG:     Searching for <parameterset name="cp2k_parameter"> in config.xml
+[2017-04-24 17:56:33,669]:DEBUG:   Parsing <substituteset name="sub_arch_file">
+[2017-04-24 17:56:33,669]:DEBUG:   Parsing <substituteset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_executesub">
+[2017-04-24 17:56:33,670]:DEBUG:     Searching for <substituteset name="executesub"> in platform.xml
+[2017-04-24 17:56:33,671]:DEBUG:   Parsing <fileset name="sources">
+[2017-04-24 17:56:33,671]:DEBUG:   Parsing <fileset name="inputs">
+[2017-04-24 17:56:33,671]:DEBUG:   Parsing <fileset name="jube_7eb2e6be0c6f3a7f6875c2ab5a3ffcbe_jobfiles">
+[2017-04-24 17:56:33,671]:DEBUG:     Searching for <fileset name="jobfiles"> in platform.xml
+[2017-04-24 17:56:33,672]:DEBUG:   Parsing <fileset name="jube_c531622b58df97da7f5c793f7f7a75ef_postprocessing_files">
+[2017-04-24 17:56:33,672]:DEBUG:     Searching for <fileset name="postprocessing_files"> in eocoe_jube.xml
+[2017-04-24 17:56:33,676]:DEBUG:   Parsing <patternset name="eocoe_metrics">
+[2017-04-24 17:56:33,676]:DEBUG:     Searching for <patternset name="eocoe_metrics"> in eocoe_jube.xml
+[2017-04-24 17:56:33,679]:DEBUG:   Parsing <step name="compile">
+[2017-04-24 17:56:33,679]:DEBUG:   Parsing <step name="execute">
+[2017-04-24 17:56:33,679]:DEBUG:   Parsing <step name="postprocess">
+[2017-04-24 17:56:33,679]:DEBUG:   Parsing <analyser name="analyse">
+[2017-04-24 17:56:33,679]:DEBUG: Start consistency check
+[2017-04-24 17:56:33,680]:DEBUG: Create benchmark directory

@@ -1,0 +1,233 @@
+<jube>
+   <include-path>
+     <path>.</path>
+     <path>../extraction</path>
+     <path>../platform/nemo/</path>
+   </include-path>
+  <!-- set benchmark name and output folder -->
+  <benchmark name="code_name" outpath="output_folder">
+    <comment>A comment</comment>
+
+    <!-- load tag mode handling for the compile step -->
+    <parameterset name="compile_modes" init_with="eocoe_jube.xml">
+      <!-- all different run modeas are disabled by default, remove one of following line to activiate the corresponding run mode-->
+      <parameter name="darshan_mode"></parameter>
+      <parameter name="scatter_mode"></parameter>
+      <parameter name="compact_mode"></parameter>
+    </parameterset>
+
+    <!-- compile parametrisation -->
+    <parameterset name="compile_param" init_with="compile_param.xml" />
+
+    <!-- substitute parts of the source files -->
+    <substituteset name="sub_source_files">
+      <iofile in="$jube_benchmark_home/Makefile.inc" out="Makefile_${arc_file}-${arc_file_version}.inc"/>
+      <sub source="CC =">CC = $cc#</sub>
+      <sub source="LD =">LD = $ld#</sub>
+      <sub source="SRC =">SRC = $src_folder#</sub>
+      <sub source="DISTR =">DISTR = $distr_folder#</sub>
+      <sub source="BUILD =">BUILD = $build_folder#</sub>
+      <sub source="EXEC =">EXEC = ${executable_file}#</sub>
+    </substituteset>
+ 
+    <!-- source files needed for compile -->
+    <fileset name="sources">
+      <prepare>mkdir -p $build_folder</prepare>
+-      <prepare>mkdir -p $distr_folder</prepare>
+    </fileset>
+
+    <!-- compilation -->
+    <step name="compile" suffix="$compile_mode">
+      <use>compile_modes</use> <!-- eocoe compile mode handling -->
+      <use>compile_param</use> <!-- program spec compile parameter -->
+      <use>sources</use> <!-- source files needed for compile -->
+      <use>sub_source_files</use> <!-- substitute parts of the source files -->
+      <do tag="!no_compile">
+         make -f $jube_benchmark_home/Makefile ARCH=$arc_file VERSION=$arc_file_version JUBE_HOME=$jube_benchmark_home
+         mkdir -p ${jube_benchmark_home}/${exec_archive}/
+         cp ${distr_folder}/${executable_file} ${jube_benchmark_home}/${exec_archive}/
+      </do> <!-- compilation commands -->
+      <do tag="no_compile">
+         cp ${jube_benchmark_home}/${exec_archive}/${executable_file} ${distr_folder}/
+      </do>
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load tag mode handling for the execute step -->
+    <parameterset name="execute_modes" init_with="eocoe_jube.xml" />
+
+    <!-- set job specific parameter by overwritting the platform default configuration, see platform.xml -->
+    <parameterset name="systemParameter" init_with="platform.xml">
+        <parameter name="nodes" type="int">256</parameter>
+        <parameter name="taskspernode" type="int">2</parameter>
+        <parameter name="threadspertask" type="int">8</parameter>
+	<!-- Strong Scaling -->
+        <parameter name="nodes" type="int" tag="strong_scale">1,2,4,8</parameter>
+        <parameter name="threadspertask" type="int" tag="strong_scale">8,12</parameter>
+	<!-- Sequential -->
+        <parameter name="nodes" type="int" tag="seq">1</parameter>
+        <parameter name="taskspernode" type="int" tag="seq">1</parameter>
+        <parameter name="threadspertask" type="int" tag="seq">1,2,4,8,12</parameter>
+        <parameter name="executable">compile/${distr_folder}/${executable_file}</parameter> 
+        <parameter name="args_exec">$input_files $distribution $arguments $error_analysis $percent_relaxation $solution_distributed $BLR</parameter>
+        <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
+        <parameter name="mail">leleux@cerfacs.fr</parameter>
+	<parameter name="reservation">eocoe</parameter>
+        <parameter name="notification">ALL</parameter>
+        <parameter name="outlogfile">job.out</parameter>
+        <parameter name="errlogfile">job.err</parameter>
+        <parameter name="timelimit">12:00:00</parameter>
+	<parameter name="measurement" mode="python">
+        {"scalasca" : "time scalasca -analyze -t -f $scorep_filter_file",
+         "papi"     : "time scalasca -analyse -f $scorep_filter_file"}.get("$mode","time")
+	</parameter>
+    </parameterset>
+    <parameterset name="executeset" init_with="platform.xml">
+    </parameterset>
+
+    <!-- needed input datasets -->
+    <fileset name="inputs">
+    </fileset>
+
+    <!-- job execution -->
+    <step name="execute" suffix="$mode" depend="compile">
+      <use>execute_modes</use> <!-- eocoe execute mode handling -->
+      <use>executeset</use> <!-- platform configuration -->
+      <use from="platform.xml">executesub</use> <!-- substitution of job script template placeholders -->
+      <use from="platform.xml">jobfiles</use> <!-- job script template -->
+      <use from="parameters.xml">par_input_files</use>
+      <use from="parameters.xml">execute_parameters</use>
+      <use>inputs</use> <!-- needed input datasets -->
+      <use>systemParameter</use> <!-- platform configuration -->
+      <do done_file="$done_file">$submit $submit_script</do> <!-- submit job -->
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- postprocess metric extraction configuration -->
+    <parameterset name="postprocessing_parameter" init_with="eocoe_jube.xml">
+      <parameter name="darshan_log_file_path">execute/darshan.log</parameter> <!-- path to the binary darshan.log file gener5ated in the darshan run -->
+      <parameter name="scorep_folder_path">execute/scorep_*</parameter> <!-- scorep_folder path, normal * in pathname is available -->
+      <parameter name="scorep_trace_file_path">execute/scorep_*_trace/trace.cubex</parameter> <!-- path to the scorep trace file, normal * in pathname is available -->
+      <parameter name="scorep_profile_file_path">execute/scorep_*_sum/profile.cubex</parameter> <!-- path to the scorep profile file (from the papi run), normal * in pathname is available -->
+      <parameter name="time_information_file_path">execute/${errlogfile}</parameter> <!-- file which contain time information, normally it ist the sdterr output of the job -->
+      <parameter name="time_format">cmd</parameter> <!-- can be cmd, usr, libmem -->
+      <parameter name="mem_information_file_path">execute/stdout</parameter> <!-- file which contain memory information (or the jobid of the job if SLURM is used to extract the memory information -->
+      <parameter name="mem_format">slurm</parameter> <!-- can be slurm, usr and libmem -->
+    </parameterset>
+
+    <!-- load postprocessing step, use attribute tag="disable" if you want to skip this step in the beginning -->
+    <include from="eocoe_jube.xml" path="step[@name='postprocess']" />
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load metric extraction pattern -->
+    <patternset name="eocoe_metrics" init_with="eocoe_jube.xml" />
+
+    <!-- load analyser -->
+    <include from="eocoe_jube.xml" path="analyser" />
+
+    <!-- load result table -->
+    <include from="eocoe_jube.xml" path="result" />
+
+    <!-- analyse and result for exec times -->
+    <patternset name="pattern_output">
+      <pattern name="analysis" type="float">[" "]*ELAPSED TIME IN ANALYSIS DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="facto" type="float">[" "]*ELAPSED TIME IN FACTORIZATION DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="solve" type="float">[" "]*ELAPSED TIME IN SOLVE DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="real_space_est" type="int">[" "]*REAL SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="int_space_est" type="int">[" "]*INTEGER SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_front_size_est" type="int">[" "]*MAXIMUM FRONTAL SIZE \(ESTIMATED\)[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="real_space" type="int">[" "]*INFOG \(9\)  REAL SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="int_space" type="int">[" "]*INFOG\(10\)  INTEGER SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_front_size" type="int">[" "]*INFOG\(11\)  MAXIMUM FRONT SIZE[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="S_max_space" type="int">[" "]*Maximum effective space used in S[" "]*\(KEEP8\(67\)\)[" "]*[" "]*${jube_pat_int}</pattern>
+      <pattern name="S_avg_space" type="int">[" "]*Average effective space used in S[" "]*\(KEEP8\(67\)\)[" "]*[" "]*${jube_pat_int}</pattern>
+      <pattern name="ops_elimination_est" type="float">[" "]*RINFOG\(1\) Operations during elimination \(estim\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="ops_elimination" type="float">[" "]*------\(3\)  OPERATIONS IN NODE ELIMINATION=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="off_diag_pivots" type="int">[" "]*INFOG\(12\)  NUMBER OF OFF DIAGONAL PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="negative_pivots" type="int">[" "]*INFOG\(12\)  NUMBER OF NEGATIVE PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="delayed_pivots" type="int">[" "]*INFOG\(13\)  NUMBER OF DELAYED PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="pivots_2x2_node1" type="int">[" "]*NUMBER OF 2x2 PIVOTS in type 1 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="pivots_2x2_node2" type="int">[" "]*NUMBER OF 2x2 PIVOTS in type 2 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="null_pivots" type="int">[" "]*NB OF NULL PIVOTS DETECTED BY ICNTL\(24\)[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="deficiency_est" type="int">[" "]*INFOG\(28\)  ESTIMATED DEFICIENCY[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="residual_max_norm" type="float">[" "]*RESIDUAL IS ............ (MAX-NORM)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="residual_2_norm" type="float">[" "]*.. (2-NORM)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="A_max_norm" type="float">[" "]*RINFOG(4):NORM OF input  Matrix  (MAX-NORM)=[" 
+"]*${jube_pat_fp}</pattern>
+      <pattern name="analysis" type="float">[" "]*RINFOG(5):NORM OF Computed SOLUT (MAX-NORM)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="W1" type="float">[" "]*RINFOG(6):SCALED RESIDUAL ...... 
+(MAX-NORM)=[" 
+"]*${jube_pat_fp}</pattern>
+      <pattern name="analysis" type="float">[" "]*RINFOG(7):COMPONENTWISE SCALED RESIDUAL(W1)=[" "]*${jube_pat_fp}</pattern>
+      
+<pattern name="W2" type="float">[" "]*------(8):---------------------------- (W2)=[" 
+"]*${jube_pat_fp}</pattern>
+      <pattern name="analysis" type="float">[" "]*------(9):Upper bound ERROR ...............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="analysis" type="float">[" "]*-----(10):CONDITION NUMBER (1) ............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="analysis" type="float">[" "]*-----(11):CONDITION NUMBER (2) ............=[" "]*${jube_pat_fp}</pattern>
+    </patternset>
+
+    <analyser name="analyse_output">
+      <analyse step="postprocess">
+        <file use="pattern_output">execute/job.out</file> <!-- file which should be 
+scanned -->
+      </analyse>
+    </analyser>
+    
+    <result name="result_output">
+      <use>analyse_output</use> <!-- use existing analyser -->
+      <table name="table_output" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
+        <column>facto</column>
+        <column>solve</column>
+      </table>
+      <table name="table_output_mem" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>real_space_est</column>
+        <column>int_space_est</column>
+        <column>max_front_size_est</column>
+        <column>real_space</column>
+        <column>int_space</column>
+        <column>max_front_size</column>
+        <column>S_max_space</column>
+        <column>S_avg_space</column>
+      </table>
+      <table name="table_output_num" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>ops_elimination_est</column>
+        <column>ops_elimination</column>
+        <column>off_diag_pivots</column>
+        <column>negative_pivots</column>
+        <column>delayed_pivots</column>
+        <column>pivots_2x2_node1</column>
+        <column>pivots_2x2_node2</column>
+        <column>null_pivots</column>
+        <column>deficiency_est</column>
+      </table>
+      <table name="table_output_csv" type="csv">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
+        <column>facto</column>
+        <column>solve</column>
+        <column>real_space_est</column>
+        <column>real_space</column>
+        <column>ops_elimination_est</column>
+        <column>ops_elimination</column>
+        <column>delayed_pivots</column>
+      </table>
+    </result>
+
+  </benchmark>
+</jube>

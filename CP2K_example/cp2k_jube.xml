@@ -1,0 +1,197 @@
+<jube>
+   <include-path>
+     <path tag="fayalite">config/fayalite</path>
+     <path tag="h2o">config/H2O</path>
+     <path tag="hybrid">config/Hybrid</path>
+     <path>config/SiH</path>
+   </include-path>
+
+   <benchmark name="cp2k_bench" outpath="bench_runs">
+    <comment>CP2K EoCoE benchmark</comment>
+
+    <!-- Load tag mode handling for the compile step -->
+    <parameterset name="compile_modes" init_with="eocoe_jube.xml" />
+
+    <!-- compile parametrisation -->
+    <parameterset name="compile_param">
+      <parameter name="arc_file">Jureca</parameter>
+      <parameter name="arc_file_version">popt</parameter>
+      <parameter name="comp_para">8</parameter>
+      <!-- <parameter name="comp_flags"></parameter>
+      <parameter name="comp_flags" tag="buffered_io">-assume buffered_io</parameter> -->
+      <parameter name="module_list">
+        module purge
+        module use /usr/local/software/jureca/OtherStages
+        module load Stages/2016a
+        module load intel-para/2016a
+        module load Libint/1.1.4
+        module load FFTW/3.3.4
+        module load Libxc/.2.2.2
+      </parameter>
+      <parameter name="cc" mode="python">
+        {"scalasca": "scorep mpicc",
+         "no-vec": "mpicc -no-simd -no-vec",
+         "no-fma": "mpicc -no-fma"}.get("$compile_mode","mpicc")
+      </parameter>
+      <parameter name="fc" mode="python">
+        {"scalasca": "scorep mpif90",
+         "no-vec": "mpif90 -no-simd -no-vec",
+         "no-fma": "mpif90 -no-fma"}.get("$compile_mode","mpif90")
+      </parameter>
+      <parameter name="ld">$fc</parameter>
+      <!-- Pathes (for the different instrumented executables) must be set if for one of these an existing executable should be used ("no_compile" mode)-->
+      <parameter name="exist_exec_ref" tag="no_compile">bench_runs/000002/000000_compile_ref/work/cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}</parameter>
+      <parameter name="exist_exec_scalasca" tag="no_compile">bench_runs/000002/000001_compile_scalasca/work/cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}</parameter>
+      <parameter name="exist_exec_no_vec" tag="no_compile">bench_runs/000002/000002_compile_no-vec/work/cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}</parameter>
+      <parameter name="exist_exec_no_fma" tag="no_compile">bench_runs/000002/000003_compile_no-fma/work/cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}</parameter>
+      <parameter name="exist_exec" mode="python" tag="no_compile">
+        {"no-vec": "${exist_exec_no_vec}",
+         "no-fma": "${exist_exec_no_fma}"}.get("${compile_mode}","${exist_exec_${compile_mode}}")
+      </parameter>
+    </parameterset>
+
+    <!-- substitute parts of the default arch file -->
+    <substituteset name="sub_arch_file">
+      <iofile in="cp2k-3.0/arch/${arc_file}.${arc_file_version}" out="cp2k-3.0/arch/${arc_file}.${arc_file_version}"/>
+      <sub source="CC =">CC = $cc#</sub>
+      <sub source="FC =">FC = $fc#</sub>
+      <sub source="LD =">LD = $ld#</sub>
+      <!-- <sub source="FREE =">FREE = -fpp -free $comp_flags#</sub> -->
+    </substituteset>
+
+    <!-- source files needed for compile -->
+    <fileset name="sources">
+      <link tag="!no_compile">../source/cp2k-3.0.tar.bz2</link>
+      <prepare tag="!no_compile">tar -xf cp2k-3.0.tar.bz2</prepare>
+      <copy name="cp2k-3.0/makefile.patch,cp2k-3.0/makedep.patch" directory="../patches" tag="!no_compile">makefile.patch,makedep.patch</copy>
+      <prepare work_dir="cp2k-3.0" tag="!no_compile">patch -p0 &lt; makefile.patch</prepare>
+      <prepare work_dir="cp2k-3.0" tag="!no_compile">patch -p0 &lt; makedep.patch</prepare>
+      <copy name="cp2k-3.0/arch/${arc_file}.${arc_file_version}" tag="!no_compile">../arch_files/${arc_file}.${arc_file_version}</copy>
+      <prepare tag="no_compile">mkdir -p cp2k-3.0/exe/${arc_file}</prepare>
+      <copy tag="no_compile" name="cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}">${exist_exec}</copy>
+    </fileset>
+
+    <!-- compilation -->
+    <step name="compile" suffix="$compile_mode">
+      <use>compile_modes</use>
+      <use>compile_param</use>
+      <use>sources</use>
+      <use tag="!no_compile">sub_arch_file</use>
+      <do tag="!no_compile">$module_list</do>
+      <do active="'$compile_mode' == 'scalasca'" tag="!no_compile">module load Scalasca</do>
+      <do work_dir="cp2k-3.0/makefiles" tag="!no_compile">make realclean -j $comp_para ARCH=$arc_file VERSION=$arc_file_version</do>
+      <do work_dir="cp2k-3.0/makefiles" tag="!no_compile">make -j $comp_para ARCH=$arc_file VERSION=$arc_file_version</do>
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- Load tag mode handling for the execute step -->
+    <parameterset name="execute_modes" init_with="eocoe_jube.xml" />
+
+    <parameterset name="systemParameter" init_with="platform.xml">
+      <parameter name="executable">./compile/cp2k-3.0/exe/${arc_file}/cp2k.${arc_file_version}</parameter>
+      <parameter name="timelimit">00:30:00</parameter>
+      <parameter name="extended_env">
+        ${module_list}
+        export FORT_BUFFERED=$use_buffered_io
+      </parameter>
+      <parameter name="env" mode="python" separator=";">
+        {"darshan": """
+                    ${extended_env}
+                    module load darshan-runtime
+                    """,
+         "papi": """
+                 ${extended_env}
+                 module load Scalasca
+                 export SCOREP_TOTAL_MEMORY=350MB
+                 export SCOREP_MPI_MAX_COMMUNICATORS=5000
+                 export SCOREP_METRIC_PAPI_PER_PROCESS=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
+                 """,
+         "scalasca": """
+                     ${extended_env}
+                     module load Scalasca
+                     unset SCAN_TRACE_FILESYS
+                     export SCOREP_TOTAL_MEMORY=350MB
+                     export SCOREP_MPI_MAX_COMMUNICATORS=5000
+                     export SCAN_ANALYZE_OPTS=--time-correct
+                     """}.get("${mode}","""${extended_env}""")
+      </parameter>
+      <parameter name="use_buffered_io">false</parameter>
+      <parameter name="use_buffered_io" tag="buffered_io">true</parameter>
+      <parameter name="args_exec">-i $input_file -o $output_file</parameter>
+      <parameter name="measurement" mode="python">
+        {"scalasca" : "time scalasca -analyze -t -f $scorep_filter_file",
+         "papi"     : "time scalasca -analyse -f $scorep_filter_file",
+         "darshan"  : "time LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so DARSHAN_LOG_PATH=. DARSHAN_LOGFILE=darshan.log"}.get("$mode","time")
+      </parameter>
+      <parameter name="nodes" type="int" mode="python">
+        {"scatter" : 4,
+         "compact" : 4}.get("${mode}",2)
+      </parameter>
+      <parameter name="taskspernode" type="int" mode="python">
+        {"scatter" : 9,
+         "compact" : 9}.get("${mode}",18)
+      </parameter>
+    </parameterset>
+
+    <parameterset name="executeset" init_with="platform.xml">
+      <parameter name="args_starter" mode="python" separator="|">
+        {"scatter" : "--cpu_bind=map_cpu:"+(",".join(str(i) for i in range($taskspernode//2) + range(12,12+$taskspernode-$taskspernode//2))),
+         "compact" : "--cpu_bind=map_cpu:"+(",".join(str(i) for i in range($taskspernode)))}.get("${mode}","")
+      </parameter>
+    </parameterset>
+
+    <fileset name="inputs">
+      <copy>../input/${input_dir}/${input_file}</copy>
+      <copy>scorep_filter/$scorep_filter_file</copy>
+    </fileset>
+
+    <step name="execute" suffix="$mode" depend="compile">
+      <use>execute_modes</use>
+      <use>executeset</use>
+      <use from="platform.xml">executesub</use>
+      <use from="platform.xml">jobfiles</use>
+      <use>inputs</use>
+      <use>systemParameter</use>
+      <use from="config.xml">cp2k_parameter</use>
+      <do done_file="$done_file">$submit $submit_script</do>
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- Postprocess metric extraction configuration -->
+    <parameterset name="postprocessing_parameter" init_with="eocoe_jube.xml">
+      <parameter name="darshan_log_file_path">execute/darshan.log</parameter>
+      <parameter name="scorep_folder_path">execute/scorep_*</parameter>
+      <parameter name="scorep_trace_file_path">execute/scorep_cp2k_${tasks}_trace/trace.cubex</parameter>
+      <parameter name="scorep_profile_file_path">execute/scorep_cp2k_${tasks}_sum/profile.cubex</parameter>
+      <parameter name="time_information_file_path">execute/${errlogfile}</parameter>
+      <parameter name="time_format">cmd</parameter>
+      <parameter name="mem_information_file_path">execute/stdout</parameter>
+      <parameter name="mem_format">slurm</parameter>
+      <parameter name="postprocessing_scalasca_modules">
+        ${module_list}
+        module load Scalasca
+      </parameter>
+      <parameter name="postprocessing_darshan_modules">
+        ${module_list}
+        module load darshan-util SciPy-Stack/2016a-Python-2.7.11
+      </parameter>
+    </parameterset>
+
+    <!-- Load postprocessing step -->
+    <include from="eocoe_jube.xml" path="step[@name='postprocess']" />
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- Load metric extraction pattern -->
+    <patternset name="eocoe_metrics" init_with="eocoe_jube.xml" />
+
+    <!-- Load analyser -->
+    <include from="eocoe_jube.xml" path="analyser" />
+
+    <!-- Load result table -->
+    <include from="eocoe_jube.xml" path="result" />
+
+  </benchmark>
+</jube>

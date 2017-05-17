@@ -1,0 +1,189 @@
+<jube>
+   <include-path>
+     <path>.</path>
+     <path>../extraction</path>
+     <path>../platform/nemo</path>
+   </include-path>
+  <!-- set benchmark name and output folder -->
+  <benchmark name="code_name" outpath="output_folder">
+    <comment>A comment</comment>
+
+    <!-- load tag mode handling for the compile step -->
+    <parameterset name="compile_modes" init_with="eocoe_jube.xml">
+      <!-- all different run modeas are disabled by default, remove one of following line to activiate the corresponding run mode-->
+      <parameter name="darshan_mode"></parameter>
+      <parameter name="scatter_mode"></parameter>
+      <parameter name="compact_mode"></parameter>
+    </parameterset>
+
+    <!-- compile parametrisation -->
+    <parameterset name="compile_param">
+      <parameter name="arc_file">Jureca</parameter>
+      <parameter name="arc_file_version">0.1</parameter>
+      <parameter name="distr_folder">distr</parameter>
+      <parameter name="build_folder">build</parameter>
+      <parameter name="src_folder">src</parameter>
+      <parameter name="executable_file">mumps_$arc_file-$arc_file_version-$compile_mode</parameter>
+      <parameter name="exec_archive">distr_archive</parameter>
+      <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
+      <parameter name="module_list">
+        module purge
+	module load Intel/2017.0.098-GCC-5.4.0
+	module load Python/2.7.12
+	module load IntelMPI/2017.0.098
+	module load ParMETIS/4.0.3
+	module load SCOTCH/6.0.4 
+	module load METIS/5.1.0
+	module load imkl/2017.0.098
+	export I_MPI_PIN_DOMAIN=socket
+	export KMP_AFFINITY=scatter
+      </parameter>
+      <parameter name="cc" mode="python">
+        {"scalasca": "scorep mpiicpc",
+         "no-vec": "mpiicpc -no-simd -no-vec",
+         "no-fma": "mpiicpc -no-fma"}.get("$compile_mode","mpiicpc")
+      </parameter>
+      <parameter name="ld">$cc</parameter>
+    </parameterset>
+
+    <!-- substitute parts of the source files -->
+    <substituteset name="sub_source_files">
+      <iofile in="$jube_benchmark_home/Makefile.inc" out="Makefile_${arc_file}-${arc_file_version}.inc"/>
+      <sub source="CC =">CC = $cc#</sub>
+      <sub source="LD =">LD = $ld#</sub>
+      <sub source="SRC =">SRC = $src_folder#</sub>
+      <sub source="DISTR =">DISTR = $distr_folder#</sub>
+      <sub source="BUILD =">BUILD = $build_folder#</sub>
+      <sub source="EXEC =">EXEC = ${executable_file}#</sub>
+    </substituteset>
+ 
+    <!-- source files needed for compile -->
+    <fileset name="sources">
+      <prepare>mkdir -p $build_folder</prepare>
+-      <prepare>mkdir -p $distr_folder</prepare>
+    </fileset>
+
+    <!-- compilation -->
+    <step name="compile" suffix="$compile_mode">
+      <use>compile_modes</use> <!-- eocoe compile mode handling -->
+      <use>compile_param</use> <!-- program spec compile parameter -->
+      <use>sources</use> <!-- source files needed for compile -->
+      <use>sub_source_files</use> <!-- substitute parts of the source files -->
+      <do tag="!no_compile">
+         make -f $jube_benchmark_home/Makefile ARCH=$arc_file VERSION=$arc_file_version JUBE_HOME=$jube_benchmark_home
+         mkdir -p ${jube_benchmark_home}/${exec_archive}/
+         cp ${distr_folder}/${executable_file} ${jube_benchmark_home}/${exec_archive}/
+      </do> <!-- compilation commands -->
+      <do tag="no_compile">
+         cp ${jube_benchmark_home}/${exec_archive}/${executable_file} ${distr_folder}/
+      </do>
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load tag mode handling for the execute step -->
+    <parameterset name="execute_modes" init_with="eocoe_jube.xml" />
+
+    <!-- set job specific parameter by overwritting the platform default configuration, see platform.xml -->
+    <parameterset name="systemParameter" init_with="platform.xml">
+        <parameter name="nodes" type="int">1</parameter>
+        <parameter name="taskspernode" type="int">2</parameter>
+        <parameter name="threadspertask" type="int">2</parameter>
+        <parameter name="executable">compile/${distr_folder}/${executable_file}</parameter> 
+        <parameter name="args_exec">-A /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/jac.mm -B /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/F.mm</parameter>
+        <parameter name="mail">leleux@cerfacs.fr</parameter>
+	<parameter name="reservation">eocoe</parameter>
+        <parameter name="extended_env">
+           ${module_list}
+           export FORT_BUFFERED=$use_buffered_io
+        </parameter>
+        <parameter name="env" mode="python" separator=";">
+        {"darshan": """
+                ${extended_env}
+                module load darshan-runtime
+		export LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so
+		export DARSHAN_LOG_PATH=$$PWD
+		export DARSHAN_LOGFILE=darshan.log
+                   """,
+         "papi": """
+                ${extended_env}
+                module load Scalasca
+                export SCOREP_TOTAL_MEMORY=350MB
+                export SCOREP_MPI_MAX_COMMUNICATORS=5000
+<!--                export SCOREP_METRIC_PAPI_PER_PROCESS=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM -->
+                export SCOREP_METRIC_PAPI=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
+                   """,
+         "scalasca": """
+                ${extended_env}
+                module load Scalasca
+                unset SCAN_TRACE_FILESYS
+                export SCOREP_TOTAL_MEMORY=350MB
+                export SCOREP_MPI_MAX_COMMUNICATORS=5000
+                export SCAN_ANALYZE_OPTS=--single-pass
+                   """}.get("${mode}","""${extended_env}""")
+        </parameter>
+        <parameter name="notification">ALL</parameter>
+        <parameter name="outlogfile">job.out</parameter>
+        <parameter name="errlogfile">job.err</parameter>
+        <parameter name="timelimit">00:30:00</parameter>
+	<parameter name="measurement" mode="python">
+        {"scalasca" : "time scalasca -analyze -t -f $scorep_filter_file",
+         "papi"     : "time scalasca -analyse -f $scorep_filter_file"}.get("$mode","time")
+	</parameter>
+    </parameterset>
+    <parameterset name="executeset" init_with="platform.xml">
+    </parameterset>
+
+    <!-- needed input datasets -->
+    <fileset name="inputs">
+    </fileset>
+
+    <!-- job execution -->
+    <step name="execute" suffix="$mode" depend="compile">
+      <use>execute_modes</use> <!-- eocoe execute mode handling -->
+      <use>executeset</use> <!-- platform configuration -->
+      <use from="platform.xml">executesub</use> <!-- substitution of job script template placeholders -->
+      <use from="platform.xml">jobfiles</use> <!-- job script template -->
+      <use>inputs</use> <!-- needed input datasets -->
+      <use>systemParameter</use> <!-- platform configuration -->
+      <do done_file="$done_file">$submit $submit_script</do> <!-- submit job -->
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- postprocess metric extraction configuration -->
+    <parameterset name="postprocessing_parameter" init_with="eocoe_jube.xml">
+      <parameter name="darshan_log_file_path">execute/darshan.log</parameter> <!-- path to the binary darshan.log file gener5ated in the darshan run -->
+      <parameter name="scorep_folder_path">execute/scorep_*</parameter> <!-- scorep_folder path, normal * in pathname is available -->
+      <parameter name="scorep_trace_file_path">execute/scorep_*_trace/trace.cubex</parameter> <!-- path to the scorep trace file, normal * in pathname is available -->
+      <parameter name="scorep_profile_file_path">execute/scorep_*_sum/profile.cubex</parameter> <!-- path to the scorep profile file (from the papi run), normal * in pathname is available -->
+      <parameter name="time_information_file_path">execute/${errlogfile}</parameter> <!-- file which contain time information, normally it ist the sdterr output of the job -->
+      <parameter name="time_format">cmd</parameter> <!-- can be cmd, usr, libmem -->
+      <parameter name="mem_information_file_path">execute/stdout</parameter> <!-- file which contain memory information (or the jobid of the job if SLURM is used to extract the memory information -->
+      <parameter name="mem_format">slurm</parameter> <!-- can be slurm, usr and libmem -->
+      <parameter name="postprocessing_scalasca_modules">
+        ${module_list}
+        module load Scalasca
+      </parameter> <!-- modules which must be loaded to use scalasca in the postprocesing steps -->
+      <parameter name="postprocessing_darshan_modules">
+        ${module_list}
+        module load darshan-util SciPy-Stack/2016a-Python-2.7.11
+      </parameter> <!-- modules which must be loaded to use darshan in the postprocesing steps -->
+    </parameterset>
+
+    <!-- load postprocessing step, use attribute tag="disable" if you want to skip this step in the beginning -->
+    <include from="eocoe_jube.xml" path="step[@name='postprocess']" />
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load metric extraction pattern -->
+    <patternset name="eocoe_metrics" init_with="eocoe_jube.xml" />
+
+    <!-- load analyser -->
+    <include from="eocoe_jube.xml" path="analyser" />
+
+    <!-- load result table -->
+    <include from="eocoe_jube.xml" path="result" />
+
+  </benchmark>
+</jube>

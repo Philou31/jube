@@ -1,0 +1,35 @@
+<jube>
+  <!-- Definition of all available input and parameters specified per tags
+       Available inputs:
+	mphase-small, mphase-big, mpmc-small, mpmc-big, MHD10, MHD50, MHD100, MHD150
+       Available parameters:
+       default: ref
+       Unused options can be redefined
+    -->
+  <parameterset name="par_input_files">
+        <parameter name="input_files" tag="mphase_small">-A /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/jac.mm -B /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/F.mm</parameter>
+        <parameter name="input_files" tag="mphase_big">-A /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/big/jac.mm -B /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/big/F.mm</parameter>
+        <parameter name="input_files" tag="mpmc_small">-A /work/eocoe/eocoe26/data/SHEMAT-Suite/mpmc/small/jac.mm -B /work/eocoe/eocoe26/data/SHEMAT-Suite/mpmc/small/F.mm</parameter>
+        <parameter name="input_files" tag="mpmc_big">-A /work/eocoe/eocoe26/data/SHEMAT-Suite/mpmc/big/jac.mm -B /work/eocoe/eocoe26/data/SHEMAT-Suite/mpmc/big/F.mm</parameter>
+        <parameter name="input_files" tag="MHD10">-A /work/eocoe/eocoe26/data/MHD/10/A.txt -B /work/eocoe/eocoe26/data/MHD/10/RHS.txt</parameter>
+        <parameter name="input_files" tag="MHD50">-A /work/eocoe/eocoe26/data/MHD/50/A.txt -B /work/eocoe/eocoe26/data/MHD/50/RHS.txt</parameter>
+        <parameter name="input_files" tag="MHD100">-A /work/eocoe/eocoe26/data/MHD/100/A.txt -B /work/eocoe/eocoe26/data/MHD/100/RHS.txt</parameter>
+        <parameter name="input_files" tag="MHD150">-A /work/eocoe/eocoe26/data/MHD/150/A.txt -B /work/eocoe/eocoe26/data/MHD/150/RHS.txt</parameter>
+        <parameter name="input_files" tag="HHG_laplace_A">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/laplace/matAlaplace.output</parameter>
+        <parameter name="input_files" tag="HHG_stokes_A">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/stokes/matA.output</parameter>
+        <parameter name="input_files" tag="HHG_rad8tan8_A">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/rad8tan8/matA.output</parameter>
+        <parameter name="input_files" tag="HHG_rad8tan16_A">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/rad8tan16/matA.output</parameter>
+        <parameter name="input_files" tag="HHG_laplace">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/laplace/global_matlaplace.output --zeros=729</parameter>
+        <parameter name="input_files" tag="HHG_stokes">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/stokes/global_mat.output --zeros=729</parameter>
+        <parameter name="input_files" tag="HHG_rad8tan8">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/rad8tan8/global_mat.output --zeros=258786</parameter>
+        <parameter name="input_files" tag="HHG_rad8tan16">-A /work/eocoe/eocoe26/data/coarsesolverHHG/examples/matrices/rad8tan16/global_mat.output --zeros=258786</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_divertor">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_inertia_divertor.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_inertia_divertor.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_big">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_big.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_big.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_medium">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_medium.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_medium.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_small">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_small.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_small.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_divertor">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_noinertia_divertor.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_noinertia_divertor.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_big">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_big.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_big.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_medium">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_medium.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_medium.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_small">-A /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_small.txt -B /work/eocoe/eocoe26/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_small.txt</parameter>
+  </parameterset>
+</jube>

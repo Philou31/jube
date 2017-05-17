@@ -1,0 +1,183 @@
+<jube>
+  <!-- General EoCoE per evaluation JUBE sets and options -->
+
+
+  <!-- Definition of all available run modes and selection of the possible compile modes 
+       Available run options:
+         darshan, scalasca, scatter, compact, no-vec, no-fma, papi, mem, ref
+       Compile modes:
+         ref, scalasca, no-vec, no-fma
+       default: ref
+       Unused options can be redefined
+    -->
+  <parameterset name="compile_modes">
+    <parameter name="darshan_mode"></parameter>
+    <parameter name="darshan_mode" tag="darshan,all">darshan</parameter>
+    <parameter name="darshan_mode_compile"></parameter>
+    <parameter name="darshan_mode_compile" tag="darshan_compile">${darshan_mode}</parameter>
+    <parameter name="scalasca_mode"></parameter>
+    <parameter name="scalasca_mode" tag="scalasca,all">scalasca</parameter>
+    <parameter name="scatter_mode"></parameter>
+    <parameter name="scatter_mode" tag="scatter,all">scatter</parameter>
+    <parameter name="compact_mode"></parameter>
+    <parameter name="compact_mode" tag="compact,all">compact</parameter>
+    <parameter name="no_vec_mode"></parameter>
+    <parameter name="no_vec_mode" tag="no-vec,all">no-vec</parameter>
+    <parameter name="no_fma_mode"></parameter>
+    <parameter name="no_fma_mode" tag="no-fma,all">no-fma</parameter>
+    <parameter name="papi_mode"></parameter>
+    <parameter name="papi_mode" tag="papi,all">papi</parameter>
+    <parameter name="mem_mode"></parameter>
+    <parameter name="mem_mode" tag="mem,all">mem</parameter>
+    <parameter name="mem_mode_compile"></parameter>
+    <parameter name="mem_mode_compile" tag="mem_compile">${mem_mode}</parameter>
+    <parameter name="ref_mode"></parameter>
+    <parameter name="ref_mode" tag="ref,all">ref</parameter>
+    <parameter name="run_ref" mode="python">
+      "ref" if "${ref_mode}" == "ref" or ("${darshan_mode}" == "darshan" and "${darshan_mode_compile}" == "") or ("${mem_mode}" == "mem" and "${mem_mode_compile}" == "") or \
+                "${scatter_mode}" == "scatter" or "${compact_mode}" == "compact"  or \
+                ("${ref_mode}${darshan_mode}${scalasca_mode}${no_vec_mode}${no_fma_mode}${papi_mode}${mem_mode_compile}" == "") else ""
+    </parameter>
+    <parameter name="run_scalasca" mode="python">
+      "scalasca" if "${scalasca_mode}" == "scalasca" or "${papi_mode}" == "papi" else ""
+    </parameter>
+    <parameter name="compile_mode" mode="python">
+      ",".join([i for i in "${run_ref} ${run_scalasca} ${no_vec_mode} ${no_fma_mode} ${mem_mode_compile} ${darshan_mode_compile}".split(" ") if len(i) > 0])
+    </parameter>
+  </parameterset>
+
+  <!-- Mode handling for the execute step -->
+  <parameterset name="execute_modes">
+    <parameter name="default_mode" mode="python">
+      "ref" if "${run_ref}" == "ref" and "${ref_mode}${ref_for_mem_mode}${ref_for_darshan_mode}${scatter_mode}${compact_mode}" == "" else ""
+    </parameter>
+    <parameter name="ref_for_mem_mode" mode="python">"${mem_mode}" if "${mem_mode_compile}" == "" else ""</parameter>
+    <parameter name="ref_for_darshan_mode" mode="python">"${darshan_mode}" if "${darshan_mode_compile}" == "" else ""</parameter>
+    <parameter name="mode" mode="python">
+      {"ref" : ",".join([i for i in "${default_mode} ${ref_mode} ${ref_for_mem_mode} ${ref_for_darshan_mode} ${scatter_mode} ${compact_mode}".split(" ") if len(i) > 0]),
+       "scalasca" : ",".join([i for i in "${scalasca_mode} ${papi_mode}".split(" ") if len(i) > 0])}.get("${compile_mode}","${compile_mode}")
+    </parameter>
+    <parameter name="first_mode" mode="python">
+      "$mode" == [i for i in "${ref_mode} ${mem_mode} ${darshan_mode} ${scatter_mode} ${compact_mode} ${scalasca_mode} ${papi_mode} ${no_vec_mode} ${no_fma_mode} ref".split(" ") if len(i) > 0][0]
+    </parameter>
+  </parameterset>
+
+  <!-- Parameter needed for postprocessing -->
+  <parameterset name="postprocessing_parameter">
+    <parameter name="darshan_log_file_path"></parameter>
+    <parameter name="scorep_folder_path"></parameter>
+    <parameter name="scorep_trace_file_path"></parameter>
+    <parameter name="scorep_profile_file_path"></parameter>
+    <parameter name="time_information_file_path"></parameter>
+    <parameter name="time_format">cmd</parameter>
+    <parameter name="mem_information_file_path"></parameter>
+    <parameter name="mem_format">slurm</parameter>
+    <parameter name="postprocessing_scalasca_modules"></parameter>
+    <parameter name="postprocessing_darshan_modules"></parameter>
+  </parameterset>
+
+  <!-- Tools needed for postprocessing -->
+  <fileset name="postprocessing_files">
+    <copy>extract_metrics.py</copy>
+    <copy tag="darshan,all">darshanparser.py</copy>
+  </fileset>
+
+  <!-- run postprocessing tools and aggregate result data in a shared directory-->
+  <step name="postprocess" depend="execute" suffix="$mode" shared="shared_dir">
+    <use from="eocoe_jube.xml">postprocessing_files</use>
+    <use>postprocessing_parameter</use>
+    <do active="$first_mode">cp extract_metrics.py shared_dir</do>
+    <do>python extract_metrics.py -t ${mode} -o shared_dir/metrics_${mode}_time.json time -f ${time_format} ${time_information_file_path}</do>
+    <do active="'$mode' in ['scalasca','papi']">$postprocessing_scalasca_modules</do>
+    <do active="'$mode' in ['scalasca','papi']">scalasca -examine -s ${scorep_folder_path}</do>
+    <do active="'$mode' == 'scalasca'">python extract_metrics.py -o shared_dir/metrics_scalasca.json scalasca ${scorep_trace_file_path}</do>
+    <do active="'$mode' == 'papi'">python extract_metrics.py -o shared_dir/metrics_papi.json papi ${scorep_profile_file_path}</do>
+    <do active="'$mode' == 'darshan'">$postprocessing_darshan_modules</do>
+    <do active="'$mode' == 'darshan'">python extract_metrics.py -o shared_dir/metrics_darshan.json darshan ${darshan_log_file_path}</do>
+    <do active="'$mode' == 'mem'">python extract_metrics.py -o shared_dir/metrics_mem.json mem -f ${mem_format} ${mem_information_file_path}</do>
+    <!-- the following steps will be executed in the shared directory -->
+    <do shared="true">python extract_metrics.py -o metrics_${jube_benchmark_id}.json combine *.json</do>
+    <do shared="true">cp metrics_${jube_benchmark_id}.json ${jube_benchmark_home}</do>
+  </step>
+
+  <!-- EoCoE metrics extraction pattern -->
+  <patternset name="eocoe_metrics">
+    <pattern name="time" type="int" unit="s">"time_ref": ${jube_pat_int}</pattern>
+    <pattern name="time_io" type="float" unit="s">"io_time": ${jube_pat_fp}</pattern>
+    <pattern name="time_mpi" type="float" unit="s">"time_mpi_no_mpiio": ${jube_pat_fp}</pattern>
+    <pattern name="mem_vs_cmp" type="float">"mem_vs_cmp": ${jube_pat_fp}</pattern>
+    <pattern name="critical_path_imbalance_ratio" type="float">"critical_path_imbalance_ratio": ${jube_pat_fp}</pattern>
+    <pattern name="load_imbalance" type="float" unit="%" mode="python">${critical_path_imbalance_ratio} * 100.0</pattern>
+    <pattern name="io_volume" type="float" unit="MB">"io_volume": ${jube_pat_fp}</pattern>
+    <pattern name="io_calls" type="int">"io_calls": ${jube_pat_int}</pattern>
+    <pattern name="io_throughput" type="float" unit="MB/s">"io_throughput": ${jube_pat_fp}</pattern>
+    <pattern name="avg_io_ac_size_B" type="float" unit="B">"avg_io_ac_size": ${jube_pat_fp}</pattern>
+    <pattern name="avg_io_ac_size" type="float" unit="kB" mode="python">${avg_io_ac_size_B} / 1024.0</pattern>
+    <pattern name="num_p2p_calls" type="int">"num_p2p_calls": ${jube_pat_int}</pattern>
+    <pattern name="p2p_comm_time" type="float" unit="s">"p2p_comm_time": ${jube_pat_fp}</pattern>
+    <pattern name="p2p_message_size_B" type="int" unit="B">"p2p_message_size": ${jube_pat_int}</pattern>
+    <pattern name="p2p_message_size" type="float" unit="kB" mode="python">${p2p_message_size_B} / 1024.0</pattern>
+    <pattern name="num_coll_calls" type="int">"num_coll_calls": ${jube_pat_int}</pattern>
+    <pattern name="coll_comm_time" type="float" unit="s">"coll_comm_time": ${jube_pat_fp}</pattern>
+    <pattern name="coll_message_size_B" type="int" unit="B">"coll_message_size": ${jube_pat_int}</pattern>
+    <pattern name="coll_message_size" type="float" unit="kB" mode="python">${coll_message_size_B} / 1024.0</pattern>
+    <pattern name="delay_mpi" type="float" unit="s">"time_delay_mpi": ${jube_pat_fp}</pattern>
+    <pattern name="delay_mpi_ratio_dec" type="float">"delay_mpi_ratio": ${jube_pat_fp}</pattern>
+    <pattern name="delay_mpi_ratio" type="float" unit="%" mode="python">${delay_mpi_ratio_dec} * 100.0</pattern>
+    <pattern name="time_omp" type="float" unit="s">"time_omp": ${jube_pat_fp}</pattern>
+    <pattern name="omp_ratio_dec" type="float">"omp_ratio": ${jube_pat_fp}</pattern>
+    <pattern name="omp_ratio" type="float" unit="%" mode="python">${omp_ratio_dec} * 100.0</pattern>
+    <pattern name="delay_omp" type="float" unit="s">"time_delay_omp": ${jube_pat_fp}</pattern>
+    <pattern name="delay_omp_ratio_dec" type="float">"delay_omp_ratio": ${jube_pat_fp}</pattern>
+    <pattern name="delay_omp_ratio" type="float" unit="%" mode="python">${delay_omp_ratio_dec} * 100.0</pattern>
+    <pattern name="memory_footprint">"mem": "${jube_pat_wrd}"</pattern>
+    <pattern name="cache_usage_intensity" type="float">"PAPI_L3_TCH_RATIO": ${jube_pat_fp}</pattern>
+    <pattern name="IPC" type="float">"PAPI_TOT_INS_RATIO": ${jube_pat_fp}</pattern>
+    <pattern name="time_no_vec" type="int" unit="s">"time_no-vec": ${jube_pat_int}</pattern>
+    <pattern name="vec_eff" type="float">"vec_eff": ${jube_pat_fp}</pattern>
+    <pattern name="time_no_fma" type="int" unit="s">"time_no-fma": ${jube_pat_int}</pattern>
+    <pattern name="fma_eff" type="float">"fma_eff": ${jube_pat_fp}</pattern>
+  </patternset>
+
+  <!-- File analyser -->
+  <analyser name="analyse">
+    <analyse step="postprocess">
+      <file use="eocoe_metrics">shared_dir/metrics_${jube_benchmark_id}.json</file>
+    </analyse>
+  </analyser>
+
+  <!-- EoCoE metrics result table -->
+  <result>
+    <use>analyse</use>
+    <table name="result" style="pretty" transpose="true" filter="$first_mode">
+      <column>time</column>
+      <column format=".1f">time_io</column>
+      <column format=".1f">time_mpi</column>
+      <column format=".1f">mem_vs_cmp</column>
+      <column format=".1f">load_imbalance</column>
+      <column format=".1f">io_volume</column>
+      <column>io_calls</column>
+      <column format=".1f">io_throughput</column>
+      <column format=".1f">avg_io_ac_size</column>
+      <column>num_p2p_calls</column>
+      <column format=".1f">p2p_comm_time</column>
+      <column format=".1f">p2p_message_size</column>
+      <column>num_coll_calls</column>
+      <column format=".1f">coll_comm_time</column>
+      <column format=".1f">coll_message_size</column>
+      <column format=".1f">delay_mpi</column>
+      <column format=".1f">delay_mpi_ratio</column>
+      <column format=".1f">time_omp</column>
+      <column format=".1f">omp_ratio</column>
+      <column format=".1f">delay_omp</column>
+      <column format=".1f">delay_omp_ratio</column>
+      <column>memory_footprint</column>
+      <column format=".2f">cache_usage_intensity</column>
+      <column format=".2f">IPC</column>
+      <column>time_no_vec</column>
+      <column format=".2f">vec_eff</column>
+      <column>time_no_fma</column>
+      <column format=".2f">fma_eff</column>
+    </table>
+  </result>
+</jube>

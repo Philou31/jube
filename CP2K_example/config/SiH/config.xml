@@ -1,0 +1,8 @@
+<jube>
+    <parameterset name="cp2k_parameter">
+        <parameter name="input_dir">QS</parameter>
+        <parameter name="input_file">SiH_intensewrite_fast.inp</parameter>
+        <parameter name="output_file">SiH_intensewrite_fast.out</parameter>
+        <parameter name="scorep_filter_file">cp2k_scorep.filt</parameter>
+    </parameterset>
+</jube>

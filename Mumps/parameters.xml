@@ -1,0 +1,18 @@
+<jube>
+  <!-- General EoCoE per evaluation JUBE sets and options -->
+  <parameterset name="execute_parameters">
+	<parameter name="distribution" tag="distributed_mapping">--ic18=1</parameter>
+	<parameter name="distribution" tag="distributed_facto">--ic18=2</parameter>
+	<parameter name="distribution" tag="distributed_analysis">--ic18=3</parameter>
+	<parameter name="arguments" tag="multiple_benchmark">--ic06=1,--ic06=2,--ic06=3,--ic06=4,--ic06=5,--ic06=6,--ic28=1 --ic07=0,--ic28=1 --ic07=2,--ic28=1 --ic07=3,--ic28=1,--ic07=4,--ic28=1 --ic07=5,--ic28=1 --ic07=6,--ic08=-2,--ic08=1,--ic08=3,--ic08=4,--ic08=7,--ic08=8,--ic10=-3,--ic10=0,--ic10=10,--ic12=1,--ic12=2,--ic12=3 --ic07=2, --ic13=-1,--ic13=0,--ic13=1,--ic24=0,--ic24=1,--ic28=2 --ic29=1,--ic28=2 --ic29=2, --ic35=0, --ic35=1 --c07=0.001 --ic10=-3, --ic35=1 --c07=0.000000000001 --ic10=-3</parameter>
+	<parameter name="arguments" tag="default">--ic28=1 --ic07=5 --ic08=7 --ic10=-3 --ic12=2 --ic13=1 --ic24=1 --ic11=1</parameter>
+	<parameter name="arguments" tag="default_par">--ic13=1 --ic28=2 --ic29=1</parameter>
+	<parameter name="error_analysis" tag="fullEA">--ic11=1</parameter>
+	<parameter name="error_analysis" tag="partEA">--ic11=2</parameter>
+	<parameter name="percent_relaxation" tag="relax_mem">--ic14=40</parameter>
+	<parameter name="solution_distributed" tag="distribute_sol">--ic21=1</parameter>
+	<parameter name="out_of_core" tag="OOC">--ic22=1</parameter>
+	<parameter name="workspace_size" tag="spec_workspace">--ic23=3000</parameter>
+	<parameter name="BLR" tag="BLR">--ic35=1 --c07=0.001</parameter>
+  </parameterset>
+</jube>

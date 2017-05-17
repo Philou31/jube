@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workpackages>
+  <workpackage id="0">
+    <step iteration="0">compile</step>
+    <parameterset>
+      <parameter mode="text" name="module_list" separator="," type="string">module purge
+        module use /usr/local/software/jureca/OtherStages
+        module load Stages/2016a
+        module load intel-para/2016a
+        module load Libint/1.1.4
+        module load FFTW/3.3.4
+        module load Libxc/.2.2.2</parameter>
+      <parameter mode="text" name="mem_mode_compile" separator="," type="string"/>
+      <parameter mode="text" name="ld" selection="mpif90" separator="," type="string">$fc</parameter>
+      <parameter mode="python" name="run_scalasca" selection="" separator="," type="string">&quot;scalasca&quot; if &quot;${scalasca_mode}&quot; == &quot;scalasca&quot; or &quot;${papi_mode}&quot; == &quot;papi&quot; else &quot;&quot;</parameter>
+      <parameter mode="text" name="ref_mode" separator="," type="string"/>
+      <parameter mode="python" name="cc" selection="mpicc" separator="," type="string">{&quot;scalasca&quot;: &quot;scorep mpicc&quot;,
+         &quot;no-vec&quot;: &quot;mpicc -no-simd -no-vec&quot;,
+         &quot;no-fma&quot;: &quot;mpicc -no-fma&quot;}.get(&quot;$compile_mode&quot;,&quot;mpicc&quot;)</parameter>
+      <parameter mode="text" name="scalasca_mode" separator="," type="string"/>
+      <parameter mode="python" name="compile_mode" selection="ref" separator="," type="string">&quot;,&quot;.join([i for i in &quot;${run_ref} ${run_scalasca} ${no_vec_mode} ${no_fma_mode} ${mem_mode_compile} ${darshan_mode_compile}&quot;.split(&quot; &quot;) if len(i) &gt; 0])</parameter>
+      <parameter mode="python" name="run_ref" selection="ref" separator="," type="string">&quot;ref&quot; if &quot;${ref_mode}&quot; == &quot;ref&quot; or (&quot;${darshan_mode}&quot; == &quot;darshan&quot; and &quot;${darshan_mode_compile}&quot; == &quot;&quot;) or (&quot;${mem_mode}&quot; == &quot;mem&quot; and &quot;${mem_mode_compile}&quot; == &quot;&quot;) or \
+                &quot;${scatter_mode}&quot; == &quot;scatter&quot; or &quot;${compact_mode}&quot; == &quot;compact&quot;  or \
+                (&quot;${ref_mode}${darshan_mode}${scalasca_mode}${no_vec_mode}${no_fma_mode}${papi_mode}${mem_mode_compile}&quot; == &quot;&quot;) else &quot;&quot;</parameter>
+      <parameter mode="text" name="arc_file_version" separator="," type="string">popt</parameter>
+      <parameter mode="text" name="arc_file" separator="," type="string">Jureca</parameter>
+      <parameter mode="python" name="fc" selection="mpif90" separator="," type="string">{&quot;scalasca&quot;: &quot;scorep mpif90&quot;,
+         &quot;no-vec&quot;: &quot;mpif90 -no-simd -no-vec&quot;,
+         &quot;no-fma&quot;: &quot;mpif90 -no-fma&quot;}.get(&quot;$compile_mode&quot;,&quot;mpif90&quot;)</parameter>
+      <parameter mode="text" name="no_fma_mode" separator="," type="string"/>
+      <parameter mode="text" name="mem_mode" separator="," type="string"/>
+      <parameter mode="text" name="comp_para" separator="," type="string">8</parameter>
+      <parameter mode="text" name="scatter_mode" separator="," type="string"/>
+      <parameter mode="text" name="papi_mode" separator="," type="string"/>
+      <parameter mode="text" name="compact_mode" separator="," type="string"/>
+      <parameter mode="text" name="darshan_mode_compile" separator="," type="string"/>
+      <parameter mode="text" name="no_vec_mode" separator="," type="string"/>
+      <parameter mode="text" name="darshan_mode" separator="," type="string"/>
+    </parameterset>
+    <iteration_siblings>0</iteration_siblings>
+    <environment/>
+  </workpackage>
+</workpackages>

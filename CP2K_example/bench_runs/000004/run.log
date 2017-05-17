@@ -1,0 +1,58 @@
+[2017-04-24 17:56:33,698]:DEBUG: Create initial workpackages
+[2017-04-24 17:56:33,724]:DEBUG: Store initial workpackage information
+[2017-04-24 17:56:33,729]:DEBUG: Start benchmark run
+[2017-04-24 17:56:33,729]:INFO: ######################################################################
+[2017-04-24 17:56:33,729]:INFO: # benchmark: cp2k_bench
+[2017-04-24 17:56:33,729]:INFO: #
+[2017-04-24 17:56:33,729]:INFO: # CP2K EoCoE benchmark
+[2017-04-24 17:56:33,730]:INFO: ######################################################################
+[2017-04-24 17:56:33,734]:DEBUG: ----- compile ( iter:0 | id:0 | parents: ) -----
+[2017-04-24 17:56:33,746]:DEBUG:   available parameter:
+[2017-04-24 17:56:33,746]:DEBUG:          parameter            | value                                   
+[2017-04-24 17:56:33,746]:DEBUG:          ---------------------+-----------------------------------------
+[2017-04-24 17:56:33,746]:DEBUG:          arc_file             | Jureca                                  
+[2017-04-24 17:56:33,746]:DEBUG:          arc_file_version     | popt                                    
+[2017-04-24 17:56:33,746]:DEBUG:          cc                   | mpicc                                   
+[2017-04-24 17:56:33,746]:DEBUG:          comp_para            | 8                                       
+[2017-04-24 17:56:33,746]:DEBUG:          compact_mode         |                                         
+[2017-04-24 17:56:33,746]:DEBUG:          compile_mode         | ref                                     
+[2017-04-24 17:56:33,746]:DEBUG:          darshan_mode         |                                         
+[2017-04-24 17:56:33,746]:DEBUG:          darshan_mode_compile |                                         
+[2017-04-24 17:56:33,746]:DEBUG:          fc                   | mpif90                                  
+[2017-04-24 17:56:33,746]:DEBUG:          jube_benchmark_home  | /homea/eocoe/eocoe26/PEW/CP2K_example   
+[2017-04-24 17:56:33,747]:DEBUG:          jube_benchmark_id    | 4                                       
+[2017-04-24 17:56:33,747]:DEBUG:          jube_benchmark_name  | cp2k_bench                              
+[2017-04-24 17:56:33,747]:DEBUG:          jube_benchmark_padid | 000004                                  
+[2017-04-24 17:56:33,747]:DEBUG:          jube_benchmark_start | 2017-04-24 17:56:33                     
+[2017-04-24 17:56:33,747]:DEBUG:          jube_step_iterations | 1                                       
+[2017-04-24 17:56:33,747]:DEBUG:          jube_step_name       | compile                                 
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_abspath      | /homea/eocoe/eocoe26/PEW/CP2K_example/be
+[2017-04-24 17:56:33,747]:DEBUG:                               | nch_runs/000004/000000_compile_ref/work 
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_envlist      |                                         
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_envstr       |                                         
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_id           | 0                                       
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_iteration    | 0                                       
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_padid        | 000000                                  
+[2017-04-24 17:56:33,747]:DEBUG:          jube_wp_relpath      | bench_runs/000004/000000_compile_ref/wor
+[2017-04-24 17:56:33,747]:DEBUG:                               | k                                       
+[2017-04-24 17:56:33,747]:DEBUG:          ld                   | mpif90                                  
+[2017-04-24 17:56:33,747]:DEBUG:          mem_mode             |                                         
+[2017-04-24 17:56:33,747]:DEBUG:          mem_mode_compile     |                                         
+[2017-04-24 17:56:33,747]:DEBUG:          module_list          | module purge                            
+[2017-04-24 17:56:33,747]:DEBUG:                               |         module use                      
+[2017-04-24 17:56:33,748]:DEBUG:                               | /usr/local/software/jureca/OtherStages  
+[2017-04-24 17:56:33,748]:DEBUG:                               |         module load Stages/2016a        
+[2017-04-24 17:56:33,748]:DEBUG:                               |         module load intel-para/2016a    
+[2017-04-24 17:56:33,748]:DEBUG:                               |         module load Libint/1.1.4        
+[2017-04-24 17:56:33,748]:DEBUG:                               |         module load FFTW/3.3.4          
+[2017-04-24 17:56:33,748]:DEBUG:                               |         module load Libxc/.2.2.2        
+[2017-04-24 17:56:33,748]:DEBUG:          no_fma_mode          |                                         
+[2017-04-24 17:56:33,748]:DEBUG:          no_vec_mode          |                                         
+[2017-04-24 17:56:33,748]:DEBUG:          papi_mode            |                                         
+[2017-04-24 17:56:33,748]:DEBUG:          ref_mode             |                                         
+[2017-04-24 17:56:33,748]:DEBUG:          run_ref              | ref                                     
+[2017-04-24 17:56:33,748]:DEBUG:          run_scalasca         |                                         
+[2017-04-24 17:56:33,748]:DEBUG:          scalasca_mode        |                                         
+[2017-04-24 17:56:33,748]:DEBUG:          scatter_mode         |                                         
+[2017-04-24 17:56:33,750]:ERROR: 
+[2017-04-24 17:56:33,750]:ERROR: no files found using "source/cp2k-3.0.tar.bz2"

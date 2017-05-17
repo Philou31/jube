@@ -1,0 +1,97 @@
+<jube>
+  <!-- set benchmark name and output folder -->
+  <benchmark name="code_name" outpath="output_folder">
+    <comment>A comment</comment>
+
+    <!-- load tag mode handling for the compile step -->
+    <parameterset name="compile_modes" init_with="eocoe_jube.xml">
+      <!-- all different run modeas are disabled by default, remove one of following line to activiate the corresponding run mode-->
+      <parameter name="darshan_mode"></parameter>
+      <parameter name="scalasca_mode"></parameter>
+      <parameter name="scatter_mode"></parameter>
+      <parameter name="compact_mode"></parameter>
+      <parameter name="no_vec_mode"></parameter>
+      <parameter name="no_fma_mode"></parameter>
+      <parameter name="papi_mode"></parameter>
+      <parameter name="mem_mode"></parameter>
+    </parameterset>
+
+    <!-- compile parametrisation -->
+    <parameterset name="compile_param">
+    </parameterset>
+
+    <!-- substitute parts of the source files -->
+    <substituteset name="sub_source_files">
+    </substituteset>
+ 
+    <!-- source files needed for compile -->
+    <fileset name="sources">
+    </fileset>
+
+    <!-- compilation -->
+    <step name="compile" suffix="$compile_mode">
+      <use>compile_modes</use> <!-- eocoe compile mode handling -->
+      <use>compile_param</use> <!-- program spec compile parameter -->
+      <use>sources</use> <!-- source files needed for compile -->
+      <use>sub_source_files</use> <!-- substitute parts of the source files -->
+      <do></do> <!-- compilation commands -->
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load tag mode handling for the execute step -->
+    <parameterset name="execute_modes" init_with="eocoe_jube.xml" />
+
+    <!-- set job specific parameter by overwritting the platform default configuration, see platform.xml -->
+    <parameterset name="systemParameter" init_with="platform.xml">
+    </parameterset>
+    <parameterset name="executeset" init_with="platform.xml">
+    </parameterset>
+
+    <!-- needed input datasets -->
+    <fileset name="inputs">
+    </fileset>
+
+    <!-- job execution -->
+    <step name="execute" suffix="$mode" depend="compile">
+      <use>execute_modes</use> <!-- eocoe execute mode handling -->
+      <use>executeset</use> <!-- platform configuration -->
+      <use from="platform.xml">executesub</use> <!-- substitution of job script template placeholders -->
+      <use from="platform.xml">jobfiles</use> <!-- job script template -->
+      <use>inputs</use> <!-- needed input datasets -->
+      <use>systemParameter</use> <!-- platform configuration -->
+      <do done_file="$done_file">$submit $submit_script</do> <!-- submit job -->
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- postprocess metric extraction configuration -->
+    <parameterset name="postprocessing_parameter" init_with="eocoe_jube.xml">
+      <parameter name="darshan_log_file_path"></parameter> <!-- path to the binary darshan.log file gener5ated in the darshan run -->
+      <parameter name="scorep_folder_path"></parameter> <!-- scorep_folder path, normal * in pathname is available -->
+      <parameter name="scorep_trace_file_path"></parameter> <!-- path to the scorep trace file, normal * in pathname is available -->
+      <parameter name="scorep_profile_file_path"></parameter> <!-- path to the scorep profile file (from the papi run), normal * in pathname is available -->
+      <parameter name="time_information_file_path"></parameter> <!-- file which contain time information, normally it ist the sdterr output of the job -->
+      <parameter name="time_format"></parameter> <!-- can be cmd, usr, libmem -->
+      <parameter name="mem_information_file_path"></parameter> <!-- file which contain memory information (or the jobid of the job if SLURM is used to extract the memory information -->
+      <parameter name="mem_format"></parameter> <!-- can be slurm, usr and libmem -->
+      <parameter name="postprocessing_scalasca_modules"></parameter> <!-- modules which must be loaded to use scalasca in the postprocesing steps -->
+      <parameter name="postprocessing_darshan_modules"></parameter> <!-- modules which must be loaded to use darshan in the postprocesing steps -->
+    </parameterset>
+
+    <!-- load postprocessing step, use attribute tag="disable" if you want to skip this step in the beginning -->
+    <include from="eocoe_jube.xml" path="step[@name='postprocess']" />
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load metric extraction pattern -->
+    <patternset name="eocoe_metrics" init_with="eocoe_jube.xml" />
+
+    <!-- load analyser -->
+    <include from="eocoe_jube.xml" path="analyser" />
+
+    <!-- load result table -->
+    <include from="eocoe_jube.xml" path="result" />
+
+  </benchmark>
+</jube>

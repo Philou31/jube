@@ -1,0 +1,8 @@
+<jube>
+  <parameterset name="cp2k_parameter">
+    <parameter name="input_dir">fayalite</parameter>
+    <parameter name="input_file">fayalite.inp</parameter>
+    <parameter name="output_file">fayalite.out</parameter>
+    <parameter name="scorep_filter_file">cp2k_scorep_fayalite.filt</parameter>
+  </parameterset>
+</jube>

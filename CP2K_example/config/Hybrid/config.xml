@@ -1,0 +1,8 @@
+<jube>
+  <parameterset name="cp2k_parameter">
+    <parameter name="input_dir">HYBRID-Si</parameter>
+    <parameter name="input_file">Si.inp</parameter>
+    <parameter name="output_file">Si.out</parameter>
+    <parameter name="scorep_filter_file">cp2k_scorep_hybrid.filt</parameter>
+  </parameterset>
+</jube>
