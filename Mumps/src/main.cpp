@@ -132,7 +132,7 @@ int main (int argc, char **argv) {
 	    arg="ic";
 	    if (k<10)
 		    arg+="0";
-	    arg+=std::to_string(k);
+	    arg+=std::to_string(static_cast<long long>(k));
             opt=a.get<int>(arg);
 	    id.ICNTL(k)=opt;
         }
@@ -145,7 +145,7 @@ int main (int argc, char **argv) {
 	    arg="c";
 	    if (k<10)
 		    arg+="0";
-	    arg+=std::to_string(k);
+	    arg+=std::to_string(static_cast<long long>(k));
             fopt=a.get<float>(arg);
 	    id.CNTL(k)=opt;
         }

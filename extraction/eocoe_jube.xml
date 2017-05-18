@@ -72,14 +72,8 @@
     <parameter name="time_format">cmd</parameter>
     <parameter name="mem_information_file_path"></parameter>
     <parameter name="mem_format">slurm</parameter>
-      <parameter name="postprocessing_scalasca_modules">
-        ${module_list}
-        module load Scalasca
-      </parameter> <!-- modules which must be loaded to use scalasca in the postprocesing steps -->
-      <parameter name="postprocessing_darshan_modules">
-        ${module_list}
-        module load darshan-util SciPy-Stack/2016a-Python-2.7.11
-      </parameter> <!-- modules which must be loaded to use darshan in the postprocesing steps -->
+    <parameter name="postprocessing_scalasca_modules"></parameter>
+    <parameter name="postprocessing_darshan_modules"></parameter>
   </parameterset>
 
   <!-- Tools needed for postprocessing -->
@@ -92,6 +86,7 @@
   <step name="postprocess" depend="execute" suffix="$mode" shared="shared_dir">
     <use from="eocoe_jube.xml">postprocessing_files</use>
     <use>postprocessing_parameter</use>
+    <use>sub_fp</use> <!-- substitute parts of the source files -->
     <do active="$first_mode">cp extract_metrics.py shared_dir</do>
     <do>python extract_metrics.py -t ${mode} -o shared_dir/metrics_${mode}_time.json time -f ${time_format} ${time_information_file_path}</do>
     <do active="'$mode' in ['scalasca','papi']">$postprocessing_scalasca_modules</do>
@@ -103,7 +98,7 @@
     <do active="'$mode' == 'mem'">python extract_metrics.py -o shared_dir/metrics_mem.json mem -f ${mem_format} ${mem_information_file_path}</do>
     <!-- the following steps will be executed in the shared directory -->
     <do shared="true">python extract_metrics.py -o metrics_${jube_benchmark_id}.json combine *.json</do>
-    <do shared="true">cp metrics_${jube_benchmark_id}.json ${jube_benchmark_home}</do>
+    <do shared="true">cp metrics_${jube_benchmark_id}.json ${jube_benchmark_home}/jsons</do>
   </step>
 
   <!-- EoCoE metrics extraction pattern -->

@@ -153,6 +153,14 @@
       <parameter name="time_format">cmd</parameter> <!-- can be cmd, usr, libmem -->
       <parameter name="mem_information_file_path">execute/stdout</parameter> <!-- file which contain memory information (or the jobid of the job if SLURM is used to extract the memory information -->
       <parameter name="mem_format">slurm</parameter> <!-- can be slurm, usr and libmem -->
+      <parameter name="postprocessing_scalasca_modules">
+        ${module_list}
+        module load Scalasca
+      </parameter> <!-- modules which must be loaded to use scalasca in the postprocesing steps -->
+      <parameter name="postprocessing_darshan_modules">
+        ${module_list}
+        module load darshan-util SciPy-Stack/2016a-Python-2.7.11
+      </parameter> <!-- modules which must be loaded to use darshan in the postprocesing steps -->
     </parameterset>
 
     <!-- load postprocessing step, use attribute tag="disable" if you want to skip this step in the beginning -->
@@ -198,16 +206,16 @@
       <pattern name="pivots_2x2_node2" type="int">[" "]*NUMBER OF 2x2 PIVOTS in type 2 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="null_pivots" type="int">[" "]*NB OF NULL PIVOTS DETECTED BY ICNTL\(24\)[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="deficiency_est" type="int">[" "]*INFOG\(28\)  ESTIMATED DEFICIENCY[" "]*=[" "]*${jube_pat_int}</pattern>
-      <pattern name="residual_max_norm" type="float">[" "]*RESIDUAL IS ............ \(MAX-NORM\)[" "]*=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="residual_2_norm" type="float">[" "]*.. \(2-NORM\)[" "]*=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="A_max_norm" type="float">[" "]*RINFOG\(4\):NORM OF input  Matrix  \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="sol_max_norm" type="float">[" "]*RINFOG\(5\):NORM OF Computed SOLUT \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="scaled_res_max_norm" type="float">[" "]*RINFOG\(6\):SCALED RESIDUAL ...... \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="W1" type="float">[" "]*RINFOG\(7\):COMPONENTWISE SCALED RESIDUAL\(W1\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="W2" type="float">[" "]*------\(8\):---------------------------- \(W2\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="error_upper_bound" type="float">[" "]*------\(9\):Upper bound ERROR ...............=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="condition1" type="float">[" "]*-----\(10\):CONDITION NUMBER \(1\) ............=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="condition2" type="float">[" "]*-----\(11\):CONDITION NUMBER \(2\) ............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="residual_max_norm" type="float">[" "]*RESIDUAL IS ............ (MAX-NORM)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="residual_2_norm" type="float">[" "]*.. (2-NORM)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="A_max_norm" type="float">[" "]*RINFOG(4):NORM OF input  Matrix  (MAX-NORM)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="sol_max_norm" type="float">[" "]*RINFOG(5):NORM OF Computed SOLUT (MAX-NORM)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="scaled_res_max_norm" type="float">[" "]*RINFOG(6):SCALED RESIDUAL ...... (MAX-NORM)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="W1" type="float">[" "]*RINFOG(7):COMPONENTWISE SCALED RESIDUAL(W1)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="W2" type="float">[" "]*------(8):---------------------------- (W2)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="error_upper_bound" type="float">[" "]*------(9):Upper bound ERROR ...............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="condition1" type="float">[" "]*-----(10):CONDITION NUMBER (1) ............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="condition2" type="float">[" "]*-----(11):CONDITION NUMBER (2) ............=[" "]*${jube_pat_fp}</pattern>
     </patternset>
 
     <analyser name="analyse_output">
