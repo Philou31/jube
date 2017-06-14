@@ -30,7 +30,6 @@ int main (int argc, char **argv) {
     cmdline::parser a;
     a.add<std::string>("matrix", 'A', "Matrix A file", true, "");
     a.add<std::string>("RHS", 'B', "Matrix B file", false, "");
-    a.add<int>("symmetry", '+', "Symmetry of the Matrix", false, 0, cmdline::oneof<int>(0, 1, 2));
     a.add<int>("zeros", '#', "Number of 0s in RHS after 1s", false, 0);
     a.add<int>("ic01", '1', "output 1", false, 6, cmdline::oneof<int>(0, 6));
     a.add<int>("ic02", '2', "output 2", false, 0, cmdline::oneof<int>(0, 6));
@@ -66,58 +65,20 @@ int main (int argc, char **argv) {
     a.add<int>("ic32", 'l', "forward elimination in factorization", false, 0, cmdline::oneof<int>(0, 1));
     a.add<int>("ic33", 'm', "determinant", false, 0, cmdline::oneof<int>(0, 1));
     a.add<int>("ic35", 'w', "block low rank", false, 0, cmdline::oneof<int>(0, 1));
-    a.add<float>("c01", 'x', "relative threashold for numerical pivoting", false, -42);
-    a.add<float>("c02", 'c', "stopping criterion for iterative refinement", false, -42);
-    a.add<float>("c03", 'v', "to determine null-pivots", false, -42);
-    a.add<float>("c04", 'b', "threshold for static pivoting", false, -42);
-    a.add<float>("c05", 'n', "fixation for null pivots", false, -42);
-    a.add<float>("c07", '=', "precision of dropping parameter for BLR", false, -42);
-
+    a.add<float>("c01", 'x', "relative threashold for numerical pivoting", false, 0.01);
+    a.add<float>("c02", 'c', "stopping criterion for iterative refinement", false, -1.0);
+    a.add<float>("c03", 'v', "to determine null-pivots", false, 0.0);
+    a.add<float>("c04", 'b', "threshold for static pivoting", false, -1.0);
+    a.add<float>("c05", 'n', "fixation for null pivots", false, 0.0);
+    a.add<float>("c07", '=', "precision of dropping parameter for BLR", false, 0.0);
+    
     a.parse_check(argc, argv);
 //    bool bn = !cst::TRUE.compare(a.get<std::string>("b_n_present"));
 
     DMUMPS_STRUC_C id;
 
     // Initialize MPI
-MPI_Status status;
-MPI::Init(argc, argv); 
-int myid = MPI::COMM_WORLD.Get_rank(); 
-int nb_procs = MPI::COMM_WORLD.Get_size(); 
-char processor_name[MPI_MAX_PROCESSOR_NAME];
-int namelen = 0, ierr;
-MPI_Get_processor_name(processor_name, &namelen);
-int val=0;
-// Info MPI
-if (nb_procs!=1) {
-	if (myid!=0)
-                MPI_Recv(&val, 1, MPI_INTEGER, myid-1, 0, MPI::COMM_WORLD, &status);
-        std::cout << "MPI_proc\tSize\tCPU\tProcessor\n";
-        std::cout << myid << "\t" << nb_procs << "\t" << sched_getcpu() << "\t" << processor_name << "\n";
-
-        std::cout << "MPI_proc\tOMP_thread\tSize\tCPU\n";
-}
-// Info OpenMP
-int nthreads=1;
-int tid;
-#pragma omp parallel private(tid)
-{
-        tid = omp_get_thread_num();
-        nthreads = omp_get_num_threads();
-        #pragma omp critical
-        {
-                std::cout << myid << "\t" << tid << "\t" << nthreads << "\t" << sched_getcpu() << "\n";
-        }
-}
-// MPI Synchro
-if (nb_procs!=1) {
-	if (myid==0)
-                MPI_Send(&val, 1, MPI_INTEGER, 1, 0, MPI::COMM_WORLD);
-        else {
-              	MPI_Send(&val, 1, MPI_INTEGER, (myid+1)%nb_procs, 0, MPI::COMM_WORLD);
-        }
-	MPI_Barrier(MPI::COMM_WORLD);
-}
-/*    MPI_Comm comm = MPI_COMM_WORLD;
+    MPI_Comm comm = MPI_COMM_WORLD;
     MPI_Status status;
     int myid , ierr, nb_procs, namelen=0, val=0;
     char processor_name[MPI_MAX_PROCESSOR_NAME];
@@ -150,18 +111,17 @@ if (nb_procs!=1) {
                 MPI_Send(&val, 1, MPI_INTEGER, (myid+1)%nb_procs, 0, comm);
         }
         MPI_Barrier(MPI::COMM_WORLD);
-    }*/
+    }
 
     /* Initialize a MUMPS instance . Use MPI_COMM_WORLD . */
     std::cout << "MUMPS initialization\n";
-    id.sym = a.get<int>("symmetry");	// symmetry
+    id.sym = 0;	// unsymetric
     id.par = 1;	// working host
     id.comm_fortran = -987654;	// MPI_COMM_WORLD
     id.job = -1;	// Initialization
     dmumps_c(&id);
 
     if(myid==0) {
-        std::cout << "OPTIONS SETTING:";
 	int k;
         std::string arg;
 	// Set controls
@@ -175,7 +135,6 @@ if (nb_procs!=1) {
 	    arg+=std::to_string(static_cast<long long>(k));
             opt=a.get<int>(arg);
 	    id.ICNTL(k)=opt;
-	    std::cout << "ICNTL(" << k << ")=" << opt << "\n";
         }
 
 	// Set constants
@@ -187,12 +146,8 @@ if (nb_procs!=1) {
 	    if (k<10)
 		    arg+="0";
 	    arg+=std::to_string(static_cast<long long>(k));
-
             fopt=a.get<float>(arg);
-	    if (fopt != -42) {
-		    id.CNTL(k)=fopt;
-		    std::cout << "CNTL(" << k << ")=" << fopt << "\n";
-	    }
+	    id.CNTL(k)=opt;
         }
 
 	// Read A
@@ -214,21 +169,6 @@ if (nb_procs!=1) {
 
     // Call MUMPS solver
     id.job = 6;	// Analysis+Facto+Solve
-    dmumps_c(&id);
-
-    if(myid==0) {
-	// Reallocate RHS
-        delete[] id.rhs;
-        std::string b_file = a.get<std::string>("RHS");
-	if (b_file=="") {
-                int zeros=a.get<int>("zeros");
-		alloc_rhs(&id.rhs, id.lrhs, zeros);
-	} else
-	        get_RHS(b_file, id.lrhs, &id.rhs);
-    }
-
-    id.ICNTL(11)=1;
-    id.job = 3;	// Solve with fullEA
     dmumps_c(&id);
 
     // Terminate instance

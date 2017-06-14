@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
     <parameterset name="compile_param">
-      <parameter name="arc_file">Jureca</parameter>
+      <parameter name="arc_file">Nemo</parameter>
       <parameter name="arc_file_version">0.1</parameter>
       <parameter name="distr_folder">distr</parameter>
       <parameter name="build_folder">build</parameter>
@@ -9,7 +9,8 @@
       <parameter name="executable_file">mumps_$arc_file-$arc_file_version-$compile_mode</parameter>
       <parameter name="exec_archive">distr_archive</parameter>
       <parameter name="module_list">
-        module purge
+	source /scratch/algo/leleux/start_system/start_system.intel_2017.sh
+<!--        module purge
 
         export MKL_VERBOSE=0
 
@@ -35,10 +36,8 @@
         export PYTHONPATH=/scratch/algo/leleux/lib_intel/JUBE-2.1.4/:$PYTHONPATH
         export PATH=/scratch/algo/leleux/lib_intel/JUBE-2.1.4/bin/jube:$PATH
 
-        export I_MPI_PIN_DOMAIN=socket
-        export KMP_AFFINITY=scatter
 	module load perf/scalasca/2.2.1
-        module load darshan-util
+        module load darshan-util -->
       </parameter>
       <parameter name="cc" mode="python">
         {"scalasca": "scorep mpiicpc",

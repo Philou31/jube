@@ -1,29 +1,56 @@
+
+#####################################
+## DIRECTORIES
+#####################################
+SRC = src
+DISTR = distr
+BUILD = build
+EXEC = abcd_run
+OUTPUT = output_folder
+DISTR_ARCHIVE = distr_archive
+LIB_HOME=/scratch/algo/leleux/lib_intel
+INTELROOT=/data/softs/intel/compilers_and_libraries_2017/linux
+MKLROOT=$(INTELROOT)/mkl/lib/intel64
+
+#####################################
+## COMPILER
+#####################################
+CC=mpiicpc
+LD=mpiicpc
+CFLAGS=-c -O3 -Wall -DNDEBUG $(IABCD) $(IMUMPS) $(IPARMETIS) $(IMETIS) $(ISCOTCH) $(ISUITESPARSE) $(IBOOST) $(IPATOH) $(IHWLOC) $(ISPARSELIB) $(COTHERS)
+LDFLAGS=-O3 -DNDEBUG -z muldefs $(LABCD) $(LMUMPS) $(LSCOTCH) $(LPTSCOTCH) $(LPARMETIS) $(LMETIS) $(LPATOH) $(LSPARSELIB) $(LSUITESPARSE) $(LCOLAMD) $(LSCALAPACK) $(LLAPACK) $(LBLAS) $(LHWLOC) $(LIOMP) $(LBOOST) $(LPYTHON) $(LOTHERS)
+
 #####################################
 ## LIBRARIES
 #####################################
-MKLROOT=/usr/local/software/jureca/Stages/2016b/software/imkl/2017.0.098-iimpi-2016b/mkl
+#############
+# ABCD
+#############
+ABCD_HOME=$(LIB_HOME)/abcd_dev/
+IABCD= -I$(ABCD_HOME)/include
+LABCD= -L$(ABCD_HOME)/build/lib -labcd
 #############
 # MUMPS
 #############
-MUMPS_HOME=/homea/eocoe/eocoe26/lib/MUMPS_5.1.1
+MUMPS_HOME=$(LIB_HOME)/MUMPS_5.1.1
 IMUMPS= -I$(MUMPS_HOME)/include
 LMUMPS= -L$(MUMPS_HOME)/lib -lcmumps -lsmumps -ldmumps -lzmumps -lmumps_common -lpord
 #############
 # METIS
 #############
-METIS_HOME=/usr/local/software/jureca/Stages/2016b/software/METIS/5.1.0-iccifort-2017.0.098-GCC-5.4.0/
+METIS_HOME=$(LIB_HOME)/metis-5.1.0/build
 IMETIS= -I$(METIS_HOME)/include
 LMETIS= -L$(METIS_HOME)/lib -lmetis
-PARMETIS_HOME=/usr/local/software/jureca/Stages/2016b/software/ParMETIS/4.0.3-iimpi-2016b/
+PARMETIS_HOME=$(LIB_HOME)/parmetis-4.0.3/build
 IPARMETIS= -I$(PARMETIS_HOME)/include
 LPARMETIS= -L$(PARMETIS_HOME)/lib -lparmetis
 #############
 # SCOTCH
 #############
-#SCOTCH_HOME=/usr/local/software/jureca/Stages/2016b/software/SCOTCH/6.0.4-iimpi-2016b/
-#ISCOTCH= -I$(SCOTCH_HOME)/include
-#LSCOTCH= -L$(SCOTCH_HOME)/lib -lesmumps -lscotch -lscotcherr -lscotcherrexit
-#LPTSCOTCH= -lptesmumps -lptscotch -lptscotcherr -lptscotcherrexit
+SCOTCH_HOME=$(LIB_HOME)/scotch_6.0.4_2015
+ISCOTCH= -I$(SCOTCH_HOME)/include
+LSCOTCH= -L$(SCOTCH_HOME)/lib -lesmumps -lscotch -lscotcherr -lscotcherrexit -lscotchmetis
+LPTSCOTCH= -lptesmumps -lptscotch -lptscotcherr -lptscotcherrexit -lptscotchparmetis
 #############
 # SCALAPACK
 #############
@@ -31,40 +58,46 @@ LSCALAPACK= -L$(MKLROOT) -lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64
 #############
 # BLAS
 #############
-LBLAS = -L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core
+LBLAS= -L$(MKLROOT) -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core
 #############
-# INTEL OPENMP
+# SUITESPARSE
 #############
-LIOMP=-L/usr/local/software/jureca/Stages/2016b/software/icc/2017.0.098-GCC-5.4.0/lib/intel64 -liomp5
-#############
-# ABCD
-#############
-ABCD_HOME=/homea/eocoe/eocoe26/lib/abcd/
-IABCD=-I$(ABCD_HOME)/include -I$(ABCD_HOME)/lib/sparselib/mv/include/ -I$(ABCD_HOME)/lib/sparselib/include
-LABCD=-L$(ABCD_HOME)/build/lib/ -labcd -L$(ABCD_HOME)/lib/sparselib/lib/ -lmv -lsparse -lspblas
-#############
-# HWLOC
-#############
-HWLOC_HOME=/homea/eocoe/eocoe26/lib/hwloc-1.11.7rc1/build/
-IHWLOC=-I$(HWLOC_HOME)/include/
-LHWLOC=-L$(HWLOC_HOME)/lib/ -lhwloc
+SUITESPARSE_HOME=$(LIB_HOME)/SuiteSparse
+ISUITESPARSE= -I$(SUITESPARSE_HOME)/include
+LSUITESPARSE= -L$(SUITESPARSE_HOME)/lib -lsuitesparseconfig
+LCOLAMD= -lcolamd
 #############
 # BOOST
 #############
-BOOST_HOME=/homea/eocoe/eocoe26/lib/boost_1_63_0/build
-IBOOST=-I$(BOOST_HOME)/include/boost
-LBOOST=-L$(BOOST_HOME)/lib -lboost_mpi -lboost_serialization
+BOOST_HOME=$(LIB_HOME)/boost_1_63_0/build
+IBOOST= -I$(BOOST_HOME)/include
+LBOOST= -L$(BOOST_HOME)/lib -lboost_mpi -lboost_serialization
 #############
 # PATOH
 #############
-PATOH_HOME=/homea/eocoe/eocoe26/lib/patoh/Linux-x86_64/
-IPATOH=-I$(PATOH_HOME)
-LPATOH=-L$(PATOH_HOME) -lpatoh
-
-#####################################
-## COMPILER
-#####################################
-CC=mpiicpc
-LD=mpiicpc
-CFLAGS=-c -O2 -Wall -std=c++11 $(IABCD) $(IQRMUMPS) $(ISTARPU) $(IMETIS) $(ISCOTCH) $(IMUMPS) $(IOMPI) $(IPARMETIS) $(ICOLAMD) $(ISUITESPARSE) $(IBOOST) $(IPATOH) $(IHWLOC) -MMD -MP -qopenmp -m64 -DNDEBUG
-LDFLAGS=$(LABCD) $(LQRMUMPS) $(LSTARPU) $(LMUMPS) $(LPATOH) $(LSCOTCH) $(LPTSCOTCH) $(LPARMETIS) $(LMETIS) $(LSUITESPARSE) $(LCOLAMD) $(LSCALAPACK) $(LBLAS) $(LOMPI) $(LIOMP) $(LBOOST) $(LHWLOC) -std=c++11 -qopenmp -lifcore -z muldefs -m64 -DNDEBUG
+PATOH_HOME=$(LIB_HOME)/patoh/Linux-x86_64
+IPATOH= -I$(PATOH_HOME)
+LPATOH= -L$(PATOH_HOME) -lpatoh
+#############
+# PYTHON
+#############
+PYTHON_HOME=$(LIB_HOME)/Python-2.7/build
+IPYTHON= -I$(PYTHON_HOME)/include/python2.7
+LPYTHON= -L$(PYTHON_HOME)/lib
+#############
+# HWLOC
+#############
+HWLOC_HOME=$(LIB_HOME)/hwloc-1.11.7/build
+IHWLOC= -I$(HWLOC_HOME)/include
+LHWLOC= -L$(HWLOC_HOME)/lib -lhwloc
+#############
+# SPARSELIB
+#############
+SPARSELIB_HOME=$(ABCD_HOME)/lib/sparselib
+ISPARSELIB= -I$(SPARSELIB_HOME)/include
+LSPARSELIB= -L$(SPARSELIB_HOME)/lib -lmv -lsparse -lspblas
+#############
+# OTHERS
+#############
+COTHERS= -std=c++14 -qopenmp -fPIC -MMD -MP
+LOTHERS= -std=c++14 -qopenmp -fPIC -lpthread -lm -lifcore

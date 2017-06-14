@@ -1,0 +1,18 @@
+0: test_nbparts,patoh,mphase_small,seq
+1: test_nbparts,patoh,mphase_small
+2: test_nbparts,patoh,TOKAM3X_inertia_divertor => Error 12h timeout
+scaling,TOKAM3X_inertia_divertor,BS=4:
+	itmax=10000:
+		3: 16x8,nbparts=128
+		4: 8x8,nbparts=128
+		5: 30x8,nbparts=30
+	itmax=100:
+		6: 30x8,nbparts=30
+		7: 16x8,nbparts=128
+		8: 8x8,nbparts=128
+		13: 30x8,nbparts=120
+		14: 8-16x8,nbparts=32
+scaling,HHG_rad8tan16,BS=8,itmax=200:
+	11: 30x12,nbparts=30
+	12: 30x12,nbparts=120
+

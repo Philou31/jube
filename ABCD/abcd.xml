@@ -2,10 +2,10 @@
    <include-path>
      <path>.</path>
      <path>../extraction</path>
-     <path>../platform/nemo</path>
+     <path>../platform/nemo</path> 
    </include-path>
   <!-- set benchmark name and output folder -->
-  <benchmark name="code_name" outpath="output_folder">
+  <benchmark name="ABCD" outpath="output_folder">
     <comment>A comment</comment>
 
     <!-- load tag mode handling for the compile step -->
@@ -17,33 +17,7 @@
     </parameterset>
 
     <!-- compile parametrisation -->
-    <parameterset name="compile_param">
-      <parameter name="arc_file">Jureca</parameter>
-      <parameter name="arc_file_version">0.1</parameter>
-      <parameter name="distr_folder">distr</parameter>
-      <parameter name="build_folder">build</parameter>
-      <parameter name="src_folder">src</parameter>
-      <parameter name="executable_file">mumps_$arc_file-$arc_file_version-$compile_mode</parameter>
-      <parameter name="exec_archive">distr_archive</parameter>
-      <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
-      <parameter name="module_list">
-        module purge
-	module load Intel/2017.0.098-GCC-5.4.0
-	module load Python/2.7.12
-	module load IntelMPI/2017.0.098
-	module load ParMETIS/4.0.3
-	module load SCOTCH/6.0.4 
-	module load METIS/5.1.0
-	module load imkl/2017.0.098
-	export I_MPI_PIN_DOMAIN=socket
-	export KMP_AFFINITY=scatter
-      </parameter>
-      <parameter name="cc" mode="python">
-        {"scalasca": "scorep mpiicpc",
-         "no-vec": "mpiicpc -no-simd -no-vec",
-         "no-fma": "mpiicpc -no-fma"}.get("$compile_mode","mpiicpc")
-      </parameter>
-      <parameter name="ld">$cc</parameter>
+    <parameterset name="compile_param" init_with="compile_param.xml">
     </parameterset>
 
     <!-- substitute parts of the source files -->
@@ -78,7 +52,7 @@
          cp ${jube_benchmark_home}/${exec_archive}/${executable_file} ${distr_folder}/
       </do>
     </step>
-
+ 
     <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
 
     <!-- load tag mode handling for the execute step -->
@@ -86,46 +60,21 @@
 
     <!-- set job specific parameter by overwritting the platform default configuration, see platform.xml -->
     <parameterset name="systemParameter" init_with="platform.xml">
-        <parameter name="nodes" type="int">1</parameter>
+        <parameter name="nodes" type="int">4,8</parameter>
         <parameter name="taskspernode" type="int">2</parameter>
-        <parameter name="threadspertask" type="int">2</parameter>
+        <parameter name="threadspertask" type="int">8</parameter>
+	<!-- Strong Scaling -->
+        <parameter name="nodes" type="int" tag="strong_scale">1</parameter>
+        <parameter name="threadspertask" type="int" tag="strong_scale">1,2,4,8,12</parameter>
+	<!-- Sequential -->
+        <parameter name="nodes" type="int" tag="seq">1</parameter>
+        <parameter name="taskspernode" type="int" tag="seq">1</parameter>
+        <parameter name="threadspertask" type="int" tag="seq">1</parameter>
         <parameter name="executable">compile/${distr_folder}/${executable_file}</parameter> 
-        <parameter name="args_exec">-A /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/jac.mm -B /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/F.mm</parameter>
-        <parameter name="mail">leleux@cerfacs.fr</parameter>
-	<parameter name="reservation">eocoe</parameter>
-        <parameter name="extended_env">
-           ${module_list}
-           export FORT_BUFFERED=$use_buffered_io
-        </parameter>
-        <parameter name="env" mode="python" separator=";">
-        {"darshan": """
-                ${extended_env}
-                module load darshan-runtime
-		export LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so
-		export DARSHAN_LOG_PATH=$$PWD
-		export DARSHAN_LOGFILE=darshan.log
-                   """,
-         "papi": """
-                ${extended_env}
-                module load Scalasca
-                export SCOREP_TOTAL_MEMORY=350MB
-                export SCOREP_MPI_MAX_COMMUNICATORS=5000
-<!--                export SCOREP_METRIC_PAPI_PER_PROCESS=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM -->
-                export SCOREP_METRIC_PAPI=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
-                   """,
-         "scalasca": """
-                ${extended_env}
-                module load Scalasca
-                unset SCAN_TRACE_FILESYS
-                export SCOREP_TOTAL_MEMORY=350MB
-                export SCOREP_MPI_MAX_COMMUNICATORS=5000
-                export SCAN_ANALYZE_OPTS=--single-pass
-                   """}.get("${mode}","""${extended_env}""")
-        </parameter>
-        <parameter name="notification">ALL</parameter>
+        <parameter name="args_exec">$input_files --nbparts $nbparts --block_size $block_size --aug_blocking $aug_blocking $part_type --part_imbalance $part_imbalance $scaling $aug_type --threshold $threshold $verbose $itmax</parameter>
+        <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
-        <parameter name="timelimit">00:30:00</parameter>
 	<parameter name="measurement" mode="python">
         {"scalasca" : "time scalasca -analyze -t -f $scorep_filter_file",
          "papi"     : "time scalasca -analyse -f $scorep_filter_file"}.get("$mode","time")
@@ -144,6 +93,8 @@
       <use>executeset</use> <!-- platform configuration -->
       <use from="platform.xml">executesub</use> <!-- substitution of job script template placeholders -->
       <use from="platform.xml">jobfiles</use> <!-- job script template -->
+      <use from="input_files.xml">par_input_files</use>
+      <use from="parameters.xml">execute_parameters</use>
       <use>inputs</use> <!-- needed input datasets -->
       <use>systemParameter</use> <!-- platform configuration -->
       <do done_file="$done_file">$submit $submit_script</do> <!-- submit job -->
@@ -161,14 +112,6 @@
       <parameter name="time_format">cmd</parameter> <!-- can be cmd, usr, libmem -->
       <parameter name="mem_information_file_path">execute/stdout</parameter> <!-- file which contain memory information (or the jobid of the job if SLURM is used to extract the memory information -->
       <parameter name="mem_format">slurm</parameter> <!-- can be slurm, usr and libmem -->
-      <parameter name="postprocessing_scalasca_modules">
-        ${module_list}
-        module load Scalasca
-      </parameter> <!-- modules which must be loaded to use scalasca in the postprocesing steps -->
-      <parameter name="postprocessing_darshan_modules">
-        ${module_list}
-        module load darshan-util SciPy-Stack/2016a-Python-2.7.11
-      </parameter> <!-- modules which must be loaded to use darshan in the postprocesing steps -->
     </parameterset>
 
     <!-- load postprocessing step, use attribute tag="disable" if you want to skip this step in the beginning -->
@@ -185,5 +128,11 @@
     <!-- load result table -->
     <include from="eocoe_jube.xml" path="result" />
 
+    <!-- substitute parts of the source files -->
+    <substituteset name="sub_fp">
+      <iofile in="execute/job.out" out="execute/job_fp.out"/>
+      <sub source="D+">E+</sub>
+      <sub source="D-">E-</sub>
+    </substituteset>
   </benchmark>
 </jube>

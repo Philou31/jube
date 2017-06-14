@@ -1,5 +1,21 @@
 <jube>
   <!-- General EoCoE per evaluation JUBE sets and options -->
   <parameterset name="execute_parameters">
+	<parameter name="itmax">--itmax 10000</parameter>
+	<parameter name="itmax" tag="test_itmax">--itmax 100</parameter>
+	<parameter name="nbparts">32</parameter>
+	<parameter name="nbparts" tag="test_nbparts">4,8,16,32,64,128,256,512,1024</parameter>
+	<parameter name="block_size">4</parameter>
+	<parameter name="block_size" tag="test_block_size">1,2,4,8,16,32,64,128</parameter>
+	<parameter name="aug_blocking">128</parameter>
+	<parameter name="aug_blocking" tag="test_aug_blocking">1,2,4,8,16,32,64,128,256,512,1024</parameter>
+	<parameter name="part_type" tag="patoh">--part_type 3</parameter>
+	<parameter name="part_imbalance">3</parameter>
+	<parameter name="part_imbalance" tag="test_part_imbalance">0.5,1,2,3</parameter>
+	<parameter name="scaling" tag="scaling">--scaling 1</parameter>
+	<parameter name="aug_type" tag="aug_cij">--aug_type 1</parameter>
+	<parameter name="aug_type" tag="aug_aij">--aug_type 2</parameter>
+	<parameter name="threshold">0.000000000001</parameter>
+	<parameter name="verbose_level" tag="no_verbose">-1</parameter>
   </parameterset>
 </jube>

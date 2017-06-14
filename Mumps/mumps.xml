@@ -5,26 +5,17 @@
      <path>../platform/nemo</path> 
    </include-path>
   <!-- set benchmark name and output folder -->
-  <benchmark name="code_name" outpath="output_folder">
+  <benchmark name="Mumps" outpath="output_folder">
     <comment>A comment</comment>
 
     <!-- load tag mode handling for the compile step -->
     <parameterset name="compile_modes" init_with="eocoe_jube.xml">
       <!-- all different run modeas are disabled by default, remove one of following line to activiate the corresponding run mode-->
       <parameter name="darshan_mode"></parameter>
-      <parameter name="scatter_mode"></parameter>
-      <parameter name="compact_mode"></parameter>
     </parameterset>
 
     <!-- compile parametrisation -->
     <parameterset name="compile_param" init_with="compile_param.xml">
-      <parameter name="arc_file">Jureca</parameter>
-      <parameter name="arc_file_version">0.1</parameter>
-      <parameter name="distr_folder">distr</parameter>
-      <parameter name="build_folder">build</parameter>
-      <parameter name="src_folder">src</parameter>
-      <parameter name="executable_file">mumps_$arc_file-$arc_file_version-$compile_mode</parameter>
-      <parameter name="exec_archive">distr_archive</parameter>
     </parameterset>
 
     <!-- substitute parts of the source files -->
@@ -51,6 +42,7 @@
       <use>sources</use> <!-- source files needed for compile -->
       <use>sub_source_files</use> <!-- substitute parts of the source files -->
       <do tag="!no_compile">
+	 $module_list
          make -f $jube_benchmark_home/Makefile ARCH=$arc_file VERSION=$arc_file_version JUBE_HOME=$jube_benchmark_home
          mkdir -p ${jube_benchmark_home}/${exec_archive}/
          cp ${distr_folder}/${executable_file} ${jube_benchmark_home}/${exec_archive}/
@@ -69,53 +61,24 @@
     <parameterset name="systemParameter" init_with="platform.xml">
         <parameter name="nodes" type="int">2</parameter>
         <parameter name="taskspernode" type="int">2</parameter>
-        <parameter name="threadspertask" type="int">4</parameter>
+        <parameter name="threadspertask" type="int">12</parameter>
 	<!-- Strong Scaling -->
         <parameter name="nodes" type="int" tag="strong_scale">1,2,4,8,15</parameter>
+        <parameter name="taskspernode" type="int" tag="strong_scale">2</parameter>
         <parameter name="threadspertask" type="int" tag="strong_scale">1,2,4,8,12</parameter>
 	<!-- Sequential -->
         <parameter name="nodes" type="int" tag="seq">1</parameter>
         <parameter name="taskspernode" type="int" tag="seq">1</parameter>
         <parameter name="threadspertask" type="int" tag="seq">1</parameter>
-	<parameter name="queue">prod</parameter>
         <parameter name="executable">compile/${distr_folder}/${executable_file}</parameter> 
         <parameter name="args_exec">$input_files $distribution $arguments $error_analysis $percent_relaxation $solution_distributed $BLR</parameter>
         <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
         <parameter name="mail">leleux@cerfacs.fr</parameter>
-	<parameter name="reservation">eocoe</parameter>
-        <parameter name="extended_env">
-           ${module_list}
-           export FORT_BUFFERED=$use_buffered_io
-        </parameter>
-        <parameter name="env" mode="python" separator=";">
-        {"darshan": """
-                ${extended_env}
-                module load darshan-runtime
-		export LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so
-		export DARSHAN_LOG_PATH=$$PWD
-		export DARSHAN_LOGFILE=darshan.log
-                   """,
-         "papi": """
-                ${extended_env}
-                module load Scalasca
-                export SCOREP_TOTAL_MEMORY=350MB
-                export SCOREP_MPI_MAX_COMMUNICATORS=5000
-<!--                export SCOREP_METRIC_PAPI_PER_PROCESS=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM -->
-                export SCOREP_METRIC_PAPI=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
-                   """,
-         "scalasca": """
-                ${extended_env}
-                module load Scalasca
-                unset SCAN_TRACE_FILESYS
-                export SCOREP_TOTAL_MEMORY=350MB
-                export SCOREP_MPI_MAX_COMMUNICATORS=5000
-                export SCAN_ANALYZE_OPTS=--single-pass
-                   """}.get("${mode}","""${extended_env}""")
-        </parameter>
         <parameter name="notification">ALL</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="timelimit">12:00:00</parameter>
+        <parameter name="timelimit" tag="short_job">00:15:00</parameter>
 	<parameter name="measurement" mode="python">
         {"scalasca" : "time scalasca -analyze -t -f $scorep_filter_file",
          "papi"     : "time scalasca -analyse -f $scorep_filter_file"}.get("$mode","time")
@@ -208,6 +171,14 @@
       <pattern name="error_upper_bound" type="float">[" "]*------\(9\):Upper bound ERROR ...............=[" "]*${jube_pat_fp}</pattern>
       <pattern name="condition1" type="float">[" "]*-----\(10\):CONDITION NUMBER \(1\) ............=[" "]*${jube_pat_fp}</pattern>
       <pattern name="condition2" type="float">[" "]*-----\(11\):CONDITION NUMBER \(2\) ............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="min_BLR_block_size" type="int">[" "]*Target BLR block size \(variable\)[" "]*=[" "]*${jube_pat_int}[" "]*-[" "]*${jube_pat_nint}</pattern>
+      <pattern name="max_BLR_block_size" type="int">[" "]*Target BLR block size \(variable\)[" "]*=[" "]*${jube_pat_nint}[" "]*-[" "]*${jube_pat_int}</pattern>
+      <pattern name="RRQR_precision_espilon" type="float">[" "]*RRQR precision \(epsilon\)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="BLR_fronts" type="int">[" "]*Number of BLR fronts[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="full_rank_OPC" type="float">[" "]*Total theoretical full-rank OPC \(i.e. FR OPC\)[" "]*=[" "]*${jube_pat_fp} \($jube_pat_nfp%\)</pattern>
+      <pattern name="percent_full_rank_OPC" type="int">[" "]*Total theoretical full-rank OPC \(i.e. FR OPC\)[" "]*=[" "]*${jube_pat_nfp} \(${jube_pat_fp}%\)</pattern>
+      <pattern name="effective_OPC" type="float">[" "]*Total effective OPC[" "]*\(% FR OPC\)[" "]*=[" "]*${jube_pat_fp} \( ${jube_pat_nfp}%\)</pattern>
+      <pattern name="percent_effective_OPC" type="int">[" "]*Total effective OPC[" "]*\(% FR OPC\)[" "]*=[" "]*${jube_pat_nfp} \( ${jube_pat_fp}\)</pattern>
     </patternset>
 
     <analyser name="analyse_output">
@@ -221,8 +192,7 @@
       <table name="table_output" style="pretty">
         <column title="jube_run_id">jube_wp_id</column>
         <column>mode</column>
-        <column>nodes</column>
-        <column>taskspernode</column>
+        <column>tasks</column>
         <column>threadspertask</column>
         <column>analysis</column>
         <column>facto</column>
@@ -230,6 +200,9 @@
       </table>
       <table name="table_output_mem" style="pretty">
         <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>tasks</column>
+        <column>threadspertask</column>
         <column>real_space_est</column>
         <column>int_space_est</column>
         <column>max_front_size_est</column>
@@ -241,6 +214,9 @@
       </table>
       <table name="table_output_num" style="pretty">
         <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>tasks</column>
+        <column>threadspertask</column>
         <column>ops_elimination_est</column>
         <column>ops_elimination</column>
         <column>off_diag_pivots</column>
@@ -252,6 +228,10 @@
         <column>deficiency_est</column>
       </table>
       <table name="table_output_EA" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>tasks</column>
+        <column>threadspertask</column>
         <column>residual_max_norm</column>
         <column>residual_2_norm</column>
         <column>A_max_norm</column>
@@ -264,21 +244,25 @@
         <column>condition2</column>
       </table>
       <table name="table_output_csv" type="csv">
-        <column>jube_wp_id</column>
+        <column title="jube_run_id">jube_wp_id</column>
         <column>mode</column>
-        <column>nodes</column>
-        <column>taskspernode</column>
+        <column>tasks</column>
         <column>threadspertask</column>
         <column>analysis</column>
         <column>facto</column>
         <column>solve</column>
+        <column title="solve_EA">solve_last</column>
         <column>real_space_est</column>
         <column>real_space</column>
         <column>ops_elimination_est</column>
         <column>ops_elimination</column>
+        <column>off_diag_pivots</column>
+        <column>negative_pivots</column>
         <column>delayed_pivots</column>
-      </table>
-      <table name="table_output_EA_csv" type="csv" tag="fullEA">
+        <column>pivots_2x2_node1</column>
+        <column>pivots_2x2_node2</column>
+        <column>null_pivots</column>
+        <column>deficiency_est</column>
         <column>residual_max_norm</column>
         <column>residual_2_norm</column>
         <column>A_max_norm</column>
@@ -290,6 +274,36 @@
         <column>condition1</column>
         <column>condition2</column>
       </table>
+
+      <table name="table_output_BLR" style="pretty" tag="BLR">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>tasks</column>
+        <column>threadspertask</column>
+	<column>min_BLR_block_size</column>
+	<column>max_BLR_block_size</column>
+	<column>RRQR_precision_espilon</column>
+	<column>BLR_fronts</column>
+	<column>full_rank_OPC</column>
+	<column>percent_full_rank_OPC</column>
+	<column>effective_OPC</column>
+	<column>percent_effective_OPC</column>
+      </table>
+      <table name="table_output_BLR_csv" type="csv" tag="BLR">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>tasks</column>
+        <column>threadspertask</column>
+	<column>min_BLR_block_size</column>
+	<column>max_BLR_block_size</column>
+	<column>RRQR_precision_espilon</column>
+	<column>BLR_fronts</column>
+	<column>full_rank_OPC</column>
+	<column>percent_full_rank_OPC</column>
+	<column>effective_OPC</column>
+	<column>percent_effective_OPC</column>
+      </table>
+
     </result>
 
   </benchmark>

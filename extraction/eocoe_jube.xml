@@ -72,8 +72,8 @@
     <parameter name="time_format">cmd</parameter>
     <parameter name="mem_information_file_path"></parameter>
     <parameter name="mem_format">slurm</parameter>
-    <parameter name="postprocessing_scalasca_modules"></parameter>
-    <parameter name="postprocessing_darshan_modules"></parameter>
+    <parameter name="postprocessing_scalasca_modules">$module_list</parameter>
+    <parameter name="postprocessing_darshan_modules">$module_list</parameter>
   </parameterset>
 
   <!-- Tools needed for postprocessing -->
@@ -98,7 +98,7 @@
     <do active="'$mode' == 'mem'">python extract_metrics.py -o shared_dir/metrics_mem.json mem -f ${mem_format} ${mem_information_file_path}</do>
     <!-- the following steps will be executed in the shared directory -->
     <do shared="true">python extract_metrics.py -o metrics_${jube_benchmark_id}.json combine *.json</do>
-    <do shared="true">cp metrics_${jube_benchmark_id}.json ${jube_benchmark_home}/jsons</do>
+    <do shared="true">cp metrics_${jube_benchmark_id}.json ${jube_benchmark_home}</do>
   </step>
 
   <!-- EoCoE metrics extraction pattern -->
