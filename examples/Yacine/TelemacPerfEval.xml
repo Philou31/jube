@@ -1,0 +1,247 @@
+<jube>
+  <benchmark name="TELEMAC" outpath="/work/eocoe/eocoe17/telemac_bench">
+    <comment>TELEMAC perf analysis</comment>
+
+
+   <parameterset name="modules_param">
+      <parameter name="basic_modules">Intel ParaStationMPI/5.1.5-1 <!--IntelMPI--> HDF5/1.8.17 SciPy-Stack/2016b-Python-2.7.12</parameter>
+      <parameter name="scalasca_modules">Scalasca</parameter>
+      <parameter name="darshan_modules">darshan-runtime/3.1.2 darshan-util/3.1.2</parameter>
+      <parameter name="papi_modules">PAPI</parameter>
+      <parameter name="python_modules">SciPy-Stack/2016b-Python-2.7.12</parameter>
+      <parameter name="vtune_modules">VTune</parameter>
+<!--      <parameter name="valgrind_modules">Valgrind/3.12.0</parameter>-->
+   </parameterset>
+
+    <parameterset name="TelParam">
+      <!-- Configuration parameters -->
+      <parameter name="TelDir">../v7p2</parameter>
+      <!-- describes different configurations for each compilation mode -->
+      <parameter name="ConfigIntel">/homea/eocoe/eocoe17/TELEMAC/TELEMAC-Mascaret/Jube/pysource.eocoe.jureca.sh</parameter>
+      <parameter name="SysTel">systel.eocoe.jurecaintel.cfg</parameter>
+      <!-- Files for the test case Malpasset with Telemac-3D -->
+      <!--
+	  <parameter name="ExampleDir">examples/eocoe/telemac3d/malpasset</parameter>
+	  <parameter name="ExCas">t3d_malpasset_large.cas</parameter>
+	  <parameter name="ExFortran">t3d_malpasset.f</parameter>
+	  <parameter name="ExGeo">geo_malpasset_x64.slf</parameter>
+	  <parameter name="ExCli">geo_malpasset_x64.cli</parameter>
+	  <parameter name="ExecName">t3d_malpasset</parameter>
+      -->
+      <parameter name="ExampleDir" >examples/eocoe/telemac3d/bump</parameter>
+      <parameter name="ExCas">t3d_bump.cas</parameter>
+      <parameter name="ExFortran">t3d_bump.f</parameter>
+      <parameter name="ExGeo">geo_bump_x16.slf</parameter>
+      <parameter name="ExCli">geo_bump_x16.cli</parameter>
+      <parameter name="ExecName">t3d_bump</parameter>
+
+      <parameter name="nb_nodes" type="int">1</parameter>
+      <parameter name="nb_taskspernode" type="int">24</parameter>
+      <parameter name="nb_tasks" mode="python" type="int"> $nb_nodes * $nb_taskspernode </parameter>
+      <parameter name="RunDir">Run</parameter> 
+    </parameterset>
+
+    <!-- load tag mode handling for the compile step -->
+    <parameterset name="compile_modes" init_with="eocoe_jube.xml" >
+      <!-- adding vtune compile&run -->
+      <parameter name="vtune_mode"></parameter>
+      <parameter name="vtune_mode" tag="vtune">vtune</parameter>
+
+      <parameter name="run_ref" mode="python">
+        "ref" if "${ref_mode}"=="ref" or ("${mem_mode}"=="mem" and "${mem_mode_compile}"=="") or "${scatter_mode}"=="scatter" or "${compact_mode}"=="compact" or ("${ref_mode}${scalasca_mode}${no_vec_mode}${no_fma_mode}${papi_mode}${mem_mode_compile}${vtune_mode}"=="") else ""
+      </parameter>
+
+      <parameter name="compile_mode" mode="python">
+        ",".join([i for i in "${run_ref} ${run_scalasca} ${no_vec_mode} ${no_fma_mode} ${mem_mode_compile} ${vtune_mode} <!--${valgrind_mode}-->".split(" ") if len(i) > 0])
+      </parameter>
+    </parameterset>
+
+    <!-- compile parametrisation -->
+    <parameterset name="compile_param">
+<!-- NO NEED? <parameter name="opt_flags"> -O2 -xHost </parameter>-->
+    </parameterset>
+
+    <!-- Define load system parameters -->
+
+    <!-- substitute parts of the source files -->
+    <substituteset name="sub_source_files">
+    </substituteset>
+
+    <!-- source files needed for compile -->
+    <fileset name="scripts">
+      <copy>$ConfigIntel</copy>
+      <copy>$SysTel</copy>
+    </fileset>
+
+    <!-- compilation -->
+    <step name="compile" suffix="$compile_mode">
+      <use>modules_param</use>
+      <use>compile_modes</use>
+      <use>compile_param</use>
+      <use>TelParam</use>
+      <use>inputs,scripts</use>
+      <do>module purge</do>
+      <do>module load $basic_modules</do>
+      <do active="'$compile_mode' == 'scalasca'">module load $scalasca_modules</do>
+      <do>source $ConfigIntel</do>
+      <do>export USETELCFG=$compile_mode</do>
+      <!-- Recompile all sources-->
+      <do>python $HOMETEL/scripts/python27/compileTELEMAC.py -j 4</do>
+      <!-- Split geometrical file-->
+      <do>python $HOMETEL/scripts/python27/telemac3d.py $ExCas --ncsize=$nb_tasks -w $RunDir --split</do>
+      <!-- Create executable-->
+      <do>python $HOMETEL/scripts/python27/telemac3d.py $ExCas --ncsize=$nb_tasks -w $RunDir -x</do>
+      <do></do>
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load tag mode handling for the execute step -->
+    <parameterset name="execute_modes" init_with="eocoe_jube.xml"/>
+
+    <!-- set job specific parameter by overwritting the platform default configuration-->
+    <parameterset name="systemParameter" init_with="platform.xml">
+      <parameter name="nodes" type="int">$nb_nodes</parameter>
+    <!--  <parameter name="taskspernode" mode="python" type="int">{"scatter":"12","compact":"12"}.get("${mode}","$nb_taskspernode")</parameter> -->
+    <parameter name="taskspernode" type="int">$nb_taskspernode</parameter>
+      <parameter name="timelimit">1:00:00</parameter>
+      <parameter name="executable">out_$ExecName</parameter> 
+      
+      <parameter name="env" mode="python" separator=";">
+        {"darshan": """
+        module load $basic_modules $darshan_modules
+        """,
+        "papi": """
+        module load $basic_modules $scalasca_modules
+        export SCOREP_TOTAL_MEMORY=500MB
+        <!--export SCOREP_MPI_MAX_COMMUNICATORS=5000-->
+        export SCOREP_METRIC_PAPI=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
+        """,
+        "scalasca": """
+        module load $basic_modules Scalasca 
+        ###unset SCAN_TRACE_FILESYS
+        export SCOREP_TOTAL_MEMORY=500MB
+        ###export SCOREP_MPI_MAX_COMMUNICATORS=5000
+        export SCAN_ANALYZE_OPTS=--time-correct
+        """,
+        "vtune": """
+        module load $vtune_modules $basic_modules
+        """}.get("${mode}","""module load $basic_modules""")
+      </parameter> 
+      <parameter name="measurement" mode="python"> 
+	{"scalasca" : "time scalasca -analyze -t <!---f filter.txt-->",
+        "papi"     : "time scalasca -analyse <!---f filter.txt-->",
+        "darshan"  : "time LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so DARSHAN_LOG_PATH=. DARSHAN_LOGFILE=darshan.log"}.get("$mode","time")
+      </parameter>
+    </parameterset>
+<!--
+    <substituteset name="executesub" init_with="platform.xml">
+      <sub source="#MEASUREMENT#" dest="$measurement" />
+      <sub source="#PREPROCESS#" dest="$preprocess" />
+    </substituteset>
+-->  
+    <fileset name="inputs">
+      <copy>$TelDir/$ExampleDir/$ExCas</copy>
+      <copy>$TelDir/$ExampleDir/$ExFortran</copy>
+      <copy>$TelDir/$ExampleDir/$ExGeo</copy>
+      <copy>$TelDir/$ExampleDir/$ExCli</copy>
+      <copy>filter.txt</copy>
+    </fileset>
+  
+    <parameterset name="executeset" init_with="platform.xml">
+      <parameter name="starter" mode="python">
+	{"vtune" : "srun amplxe-cl -collect hotspots --result-dir vtune_mdft -- "
+	}.get("$mode","srun")
+      </parameter>
+      <parameter name="args_starter" mode="python" separator="|">
+        {"scatter" : "--cpu_bind=map_cpu:"+(",".join(str(i) for i in range($taskspernode//2) + range(12,12+$taskspernode-$taskspernode//2))),
+        "compact" : "--cpu_bind=map_cpu:"+(",".join(str(i) for i in range($taskspernode)))}.get("${mode}","")
+      </parameter>
+    </parameterset>
+    
+    <!-- job execution -->
+    <step name="execute" suffix="$mode" depend="compile">
+      <use>modules_param</use>
+      <use>execute_modes</use>
+      <use>executeset</use>
+      <use from="platform.xml">executesub</use>
+      <use from="platform.xml">jobfiles</use>
+      <use>inputs</use>
+      <use>systemParameter</use>
+      <do>cp -r compile/Run/* .</do>
+      <do done_file="$done_file">$submit $submit_script</do>
+    </step>
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- postprocess metric extraction configuration -->
+    <parameterset name="postprocessing_parameter" init_with="eocoe_jube.xml">
+      <parameter name="darshan_log_file_path">execute/darshan.log</parameter>
+      <parameter name="scorep_folder_path">execute/scorep_*</parameter>
+      <parameter name="scorep_trace_file_path">execute/scorep_*/trace.cubex</parameter>
+      <parameter name="scorep_profile_file_path">execute/scorep_*/profile.cubex</parameter>
+      <parameter name="time_information_file_path">execute/${errlogfile}</parameter>
+      <parameter name="time_format">cmd</parameter>
+      <parameter name="mem_information_file_path">execute/stdout</parameter>
+      <parameter name="mem_format">slurm</parameter>
+      <parameter name="postprocessing_scalasca_modules">
+        module load $basic_modules
+	module load $scalasca_modules
+      </parameter>
+      <parameter name="postprocessing_darshan_modules">
+        module load $basic_modules
+        module load $darshan_modules
+      </parameter>
+    </parameterset>
+
+    <!-- load postprocessing step -->
+    <include from="eocoe_jube.xml" path="step[@name='postprocess']" />
+
+    <!-- 888888888888888888888888888888888888888888888888888888888888888888888888888 -->
+
+    <!-- load metric extraction pattern -->
+    <patternset name="eocoe_metrics" init_with="eocoe_jube.xml" />
+
+    <!-- load analyser -->
+    <include from="eocoe_jube.xml" path="analyser" />
+
+    <!-- load result table -->
+    <include from="eocoe_jube.xml" path="result" />
+
+    <!-- postprocessing step proper to mdft -->
+    <patternset name="my_pattern">
+      <pattern name="hours"> ${jube_pat_int}[\s]* HOURS</pattern>
+      <pattern name="minutes"> ${jube_pat_int}[\s]* MINUTES</pattern>
+      <pattern name="seconds"> ${jube_pat_int}[\s]* SECONDS</pattern>
+    </patternset>
+
+    <parameterset name="my_postpro">
+      <parameter name="time_prog" mode="python">
+	{"" : "$(time_pat_m)m$(time_pat_s)s"}.get("$time_pat_h","$(time_pat_h)h$(time_pat_m)m$(time_pat_s)s")      
+      </parameter>
+    </parameterset>
+
+    <analyser name="my_analysis">
+      <analyse step="execute">
+        <file use="my_pattern">job.out</file>
+      </analyse>
+    </analyser>
+
+    <result name="my_results">
+      <use>my_analysis</use>
+      <!--<use>my_postpro</use>-->
+      <table name="my_results" style="pretty">
+        <column>mode</column>
+        <column>ExecName</column>
+        <column>nodes</column>
+	<column>taskspernode</column>
+        <column>hours</column>
+	<column>minutes</column>
+	<column>seconds</column>
+      </table>
+    </result>
+
+
+
+  </benchmark>
+</jube>

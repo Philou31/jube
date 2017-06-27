@@ -1,0 +1,4 @@
+table_output_mem:
+jube_run_id | real_space_est | int_space_est | max_front_size_est | real_space | int_space | max_front_size | S_max_space | S_avg_space
+------------+----------------+---------------+--------------------+------------+-----------+----------------+-------------+------------
+          0 |      505687687 |       3386954 |               7350 |  552089397 |   3426429 |          10739 |             |            

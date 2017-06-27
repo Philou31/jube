@@ -1,0 +1,200 @@
+Start of Lmod init/bash script to define the module command
+End of Lmod init/bash script to define the module command
+MPI_proc	Size	CPU	Processor
+0	8	0	jrc0220
+MPI_proc	OMP_thread	Size	CPU
+0	0	1	0
+MPI_proc	Size	CPU	Processor
+1	8	1	jrc0220
+MPI_proc	OMP_thread	Size	CPU
+MPI_proc	Size	CPU	Processor
+2	8	0	jrc0248
+MPI_proc	OMP_thread	Size	CPU
+MPI_proc	Size	CPU	Processor
+4	8	0	jrc0249
+MPI_proc	OMP_thread	Size	CPU
+1	0	1	1
+2	0	1	0
+4	0	1	0
+MUMPS initialization
+MPI_proc	Size	CPU	Processor
+3	8	1	jrc0248
+MPI_proc	Size	CPU	Processor
+5	8	1	jrc0249
+MPI_proc	OMP_thread	Size	CPU
+MPI_proc	Size	CPU	Processor
+6	8	0	jrc0250
+MPI_proc	OMP_thread	Size	CPU
+MUMPS initialization
+MPI_proc	OMP_thread	Size	CPU
+5	0	1	1
+MPI_proc	Size	CPU	Processor
+7	8	1	jrc0250
+MPI_proc	OMP_thread	Size	CPU
+Getting matrix in file: /work/eocoe/eocoe26/data/MHD/50/A.txt
+3	0	1	1
+MUMPS initialization
+6	0	1	0
+Matrix of size n: 242501, nz: 28928527
+MUMPS initialization
+MUMPS initialization
+7	0	1	1
+MUMPS initialization
+MUMPS initialization
+MUMPS initialization
+1	1	0.0303407
+1	2	0.0265481
+1	3	-0.00568889
+1	4	0.00331852
+1	99	-0.00568889
+1	100	0.00331852
+1	101	-0.0018963
+1	102	0.000414815
+1	4803	0.0151704
+1	4804	-0.0303407
+Getting matrix in file: /work/eocoe/eocoe26/data/MHD/50/RHS.txt
+Entering DMUMPS 5.1.1 from C interface with JOB, N, NNZ =   6      242501       28928527
+      executing #MPI =      8 and #OMP =      1
+ =================================================
+ MUMPS compiled with option -Dmetis
+ MUMPS compiled with option -Dparmetis
+ =================================================
+L U Solver for unsymmetric matrices
+Type of parallelism: Working host
+
+ ****** ANALYSIS STEP ********
+
+ ... Structural symmetry (in percent)=  100
+ Average density of rows/columns =  118
+ ... No column permutation
+ Ordering based on METIS
+ ELAPSED TIME SPENT IN METIS reordering  =      3.9400
+
+Leaving analysis phase with  ...
+INFOG(1)                                       =               0
+INFOG(2)                                       =               0
+ -- (20) Number of entries in factors (estim.) =       505654659
+ --  (3) Storage of factors  (REAL, estimated) =       505687687
+ --  (4) Storage of factors  (INT , estimated) =         3386954
+ --  (5) Maximum frontal size      (estimated) =            7350
+ --  (6) Number of nodes in the tree           =            5212
+ -- (32) Type of analysis effectively used     =               1
+ --  (7) Ordering option effectively used      =               5
+ICNTL(6) Maximum transversal option            =               0
+ICNTL(7) Pivot order option                    =               5
+Percentage of memory relaxation (effective)    =              80
+Number of level 2 nodes                        =              18
+Number of split nodes                          =               8
+RINFOG(1) Operations during elimination (estim)=   1.525D+12
+ ** Rank of proc needing largest memory in IC facto        :               7
+ ** Estimated corresponding MBYTES for IC facto            :            1700
+ ** Estimated avg. MBYTES per work. proc at facto (IC)     :            1518
+ ** TOTAL     space in MBYTES for IC factorization         :           12146
+ ** Rank of proc needing largest memory for OOC facto      :               4
+ ** Estimated corresponding MBYTES for OOC facto           :             955
+ ** Estimated avg. MBYTES per work. proc at facto (OOC)    :             882
+ ** TOTAL     space in MBYTES for OOC factorization        :            7061
+ ELAPSED TIME IN ANALYSIS DRIVER=       5.0028
+
+ ****** FACTORIZATION STEP ********
+
+
+ GLOBAL STATISTICS PRIOR NUMERICAL FACTORIZATION ...
+ NUMBER OF WORKING PROCESSES              =               8
+ OUT-OF-CORE OPTION (ICNTL(22))           =               0
+ REAL SPACE FOR FACTORS                   =       505687687
+ INTEGER SPACE FOR FACTORS                =         3386954
+ MAXIMUM FRONTAL SIZE (ESTIMATED)         =            7350
+ NUMBER OF NODES IN THE TREE              =            5212
+ MEMORY ALLOWED (MB -- 0: N/A )           =               0
+ RELATIVE THRESHOLD FOR PIVOTING, CNTL(1) =      0.1000D-01
+ Convergence error after scaling for ONE-NORM (option 7/8)   = 0.28D+00
+  ZERO PIVOT DETECTION ON, THRESHOLD          =  2.655306357833085E-021
+ INFINITE FIXATION 
+ Maximum effective relaxed size of S              =       178568952
+ Average effective relaxed size of S              =       157732970
+ ELAPSED TIME FOR MATRIX DISTRIBUTION      =      0.7735
+ ** Memory relaxation parameter ( ICNTL(14)  )            :        80
+ ** Rank of processor needing largest memory in facto     :         7
+ ** Space in MBYTES used by this processor for facto      :      1700
+ ** Avg. Space in MBYTES per working proc during facto    :      1518
+
+ ELAPSED TIME FOR FACTORIZATION           =     30.3423
+ Maximum effective space used in S     (KEEP8(67))        157898001
+ Average effective space used in S     (KEEP8(67))        105676552
+ ** EFF Min: Rank of processor needing largest memory :         5
+ ** EFF Min: Space in MBYTES used by this processor   :      1534
+ ** EFF Min: Avg. Space in MBYTES per working proc    :      1098
+
+ GLOBAL STATISTICS 
+ RINFOG(2)  OPERATIONS IN NODE ASSEMBLY   = 1.383D+09
+ ------(3)  OPERATIONS IN NODE ELIMINATION= 2.090D+12
+ INFOG (9)  REAL SPACE FOR FACTORS        =       552089397
+ INFOG(10)  INTEGER SPACE FOR FACTORS     =         3426429
+ INFOG(11)  MAXIMUM FRONT SIZE            =           10739
+ INFOG(29)  NUMBER OF ENTRIES IN FACTORS  =       552089397
+ INFOG(12)  NUMBER OF OFF DIAGONAL PIVOTS =           96008
+ INFOG(13)  NUMBER OF DELAYED PIVOTS      =           27837
+ NB OF NULL PIVOTS DETECTED BY ICNTL(24)  =               0
+ INFOG(28)  ESTIMATED DEFICIENCY          =               0
+ INFOG(14)  NUMBER OF MEMORY COMPRESS     =               2
+ ELAPSED TIME IN FACTORIZATION DRIVER=      31.5201
+
+
+ ****** SOLVE & CHECK STEP ********
+
+
+ STATISTICS PRIOR SOLVE PHASE     ...........
+ NUMBER OF RIGHT-HAND-SIDES                    =           1
+ BLOCKING FACTOR FOR MULTIPLE RHS              =           1
+ ICNTL (9)                                     =           1
+  --- (10)                                     =          -3
+  --- (11)                                     =           1
+  --- (20)                                     =           0
+  --- (21)                                     =           0
+  --- (30)                                     =           0
+
+
+ BEGIN ITERATIVE REFINEMENT
+
+
+ ERROR ANALYSIS BEFORE ITERATIVE REFINEMENT
+
+ RESIDUAL IS ............ (MAX-NORM)        = 8.10D-09
+                       .. (2-NORM)          = 1.50D-08
+ RINFOG(4):NORM OF input  Matrix  (MAX-NORM)= 4.93D-01
+ RINFOG(5):NORM OF Computed SOLUT (MAX-NORM)= 2.00D+00
+ RINFOG(6):SCALED RESIDUAL ...... (MAX-NORM)= 8.21D-09
+ RINFOG(7):COMPONENTWISE SCALED RESIDUAL(W1)= 7.22D-07
+ ------(8):---------------------------- (W2)= 0.00D+00
+
+ STATISTICS AFTER ITERATIVE REFINEMENT 
+ 
+  NUMBER OF STEPS OF ITERATIVE REFINEMENT REQUESTED =   3
+
+ RESIDUAL IS ............ (MAX-NORM)        = 1.05D-16
+                       .. (2-NORM)          = 3.31D-15
+ RINFOG(4):NORM OF input  Matrix  (MAX-NORM)= 4.93D-01
+ RINFOG(5):NORM OF Computed SOLUT (MAX-NORM)= 2.00D+00
+ RINFOG(6):SCALED RESIDUAL ...... (MAX-NORM)= 1.06D-16
+ RINFOG(7):COMPONENTWISE SCALED RESIDUAL(W1)= 3.49D-16
+ ------(8):---------------------------- (W2)= 0.00D+00
+ ------(9):Upper bound ERROR ...............= 1.08D-07
+ -----(10):CONDITION NUMBER (1) ............= 3.10D+08
+ -----(11):CONDITION NUMBER (2) ............= 1.00D+00
+
+ END   ITERATIVE REFINEMENT 
+ ** Rank of processor needing largest memory in solve     :         7
+ ** Space in MBYTES used by this processor for solve      :      1470
+ ** Avg. Space in MBYTES per working proc during solve    :      1305
+ 
+ Global statistics
+ TIME to build/scatter RHS        =       0.002158
+ TIME in solution step (fwd/bwd)  =       0.121643
+  .. TIME in forward (fwd) step   =          0.053722
+  .. TIME in backward (bwd) step  =          0.067852
+ TIME to gather solution(cent.sol)=       0.003665
+ TIME to copy/scale RHS (dist.sol)=       0.000000
+ ELAPSED TIME IN SOLVE DRIVER=       1.6020
+Entering DMUMPS 5.1.1 from C interface with JOB =  -2
+      executing #MPI =      8 and #OMP =      1

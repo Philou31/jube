@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube version="2.1.3">
+  <benchmark file_path_ref="../.." name="result_creation" outpath="..">
+    <comment>A result creation example</comment>
+    <parameterset name="param_set">
+      <parameter mode="text" name="number" separator="," type="int">1</parameter>
+    </parameterset>
+    <patternset name="pattern_output">
+      <pattern mode="pattern" name="deficiency_est" type="int">INFOG\(28\)  ESTIMATED DEFICIENCY[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="ops_elimination" type="float">------\(3\)  OPERATIONS IN NODE ELIMINATION=[&quot; &quot;]*${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="max_front_size" type="int">INFOG\(11\)  MAXIMUM FRONT SIZE[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="facto" type="float">ELAPSED TIME IN FACTORIZATION DRIVER=[&quot; &quot;]*${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="max_front_size_est" type="int">MAXIMUM FRONTAL SIZE \(ESTIMATED\)[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="pivots_2x2_node1" type="int">NUMBER OF 2x2 PIVOTS in type 1 nodes[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="pivots_2x2_node2" type="int">NUMBER OF 2x2 PIVOTS in type 2 nodes[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="real_space_est" type="int">REAL SPACE FOR FACTORS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="real_space" type="int">INFOG \(9\)  REAL SPACE FOR FACTORS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="delayed_pivots" type="int">INFOG\(13\)  NUMBER OF DELAYED PIVOTS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="analysis" type="float">ELAPSED TIME IN ANALYSIS DRIVER=[&quot; &quot;]*${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="S_max_space" type="int">Maximum effective space used in S[&quot; &quot;]*\(KEEP8\(67\)\)[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="ops_elimination_est" type="float">RINFOG\(1\) Operations during elimination \(estim\)=[&quot; &quot;]*${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="solve" type="float">ELAPSED TIME IN SOLVE DRIVER=[&quot; &quot;]*${jube_pat_fp}</pattern>
+      <pattern mode="pattern" name="S_avg_space" type="int">Average effective space used in S[&quot; &quot;]*\(KEEP8\(67\)\)[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="negative_pivots" type="int">INFOG\(12\)  NUMBER OF NEGATIVE PIVOTS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="int_space_est" type="int">INTEGER SPACE FOR FACTORS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="off_diag_pivots" type="int">INFOG\(12\)  NUMBER OF OFF DIAGONAL PIVOTS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="null_pivots" type="int">NB OF NULL PIVOTS DETECTED BY ICNTL\(24\)[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="int_space" type="int">INFOG\(10\)  INTEGER SPACE FOR FACTORS[&quot; &quot;]*=[&quot; &quot;]*${jube_pat_int}</pattern>
+    </patternset>
+    <patternset name="pattern">
+      <pattern mode="pattern" name="real_space_est" type="int">REAL SPACE FOR FACTORS                   =[&quot; &quot;]*${jube_pat_int}</pattern>
+      <pattern mode="pattern" name="number_pat" type="int">Number: $jube_pat_int</pattern>
+    </patternset>
+    <step name="run">
+      <do>echo &quot;computing tables...&quot;</do>
+    </step>
+    <step name="write_number">
+      <use>param_set</use>
+      <do>echo &quot;Number: $number&quot;</do>
+    </step>
+    <analyser name="analyse" reduce="True">
+      <use>pattern</use>
+      <analyse step="write_number">
+        <file>stdout</file>
+        <file>${jube_benchmark_home}/job.out</file>
+      </analyse>
+    </analyser>
+    <analyser name="analyse_output" reduce="True">
+      <analyse step="run">
+        <file use="pattern_output">${jube_benchmark_home}/job.out</file>
+      </analyse>
+    </analyser>
+    <result>
+      <use>analyse</use>
+      <table name="result" separator="," sort="number" style="pretty" transpose="False">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>number</column>
+        <column>number_pat</column>
+        <column>real_space_est</column>
+      </table>
+    </result>
+    <result>
+      <use>analyse_output</use>
+      <table name="table_output" separator="," style="pretty" transpose="False">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
+        <column>facto</column>
+        <column>solve</column>
+      </table>
+    </result>
+    <result>
+      <use>analyse_output</use>
+      <table name="table_output_mem" separator="," style="pretty" transpose="False">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>real_space_est</column>
+        <column>int_space_est</column>
+        <column>max_front_size_est</column>
+        <column>real_space</column>
+        <column>int_space</column>
+        <column>max_front_size</column>
+        <column>S_max_space</column>
+        <column>S_avg_space</column>
+      </table>
+    </result>
+    <result>
+      <use>analyse_output</use>
+      <table name="table_output_num" separator="," style="pretty" transpose="False">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>ops_elimination_est</column>
+        <column>ops_elimination</column>
+        <column>off_diag_pivots</column>
+        <column>negative_pivots</column>
+        <column>delayed_pivots</column>
+        <column>pivots_2x2_node1</column>
+        <column>pivots_2x2_node2</column>
+        <column>null_pivots</column>
+        <column>deficiency_est</column>
+      </table>
+    </result>
+    <result>
+      <use>analyse_output</use>
+      <table name="table_output_csv" separator="," style="csv" transpose="False">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
+        <column>facto</column>
+        <column>solve</column>
+      </table>
+    </result>
+  </benchmark>
+</jube>

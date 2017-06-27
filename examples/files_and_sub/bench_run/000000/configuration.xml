@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube version="2.1.3">
+  <benchmark file_path_ref="../.." name="files_and_sub" outpath="..">
+    <comment>A file copy and substitution example</comment>
+    <parameterset name="param_set">
+      <parameter mode="text" name="number" separator="," type="int">1,2,4</parameter>
+    </parameterset>
+    <substituteset name="substitute">
+      <iofile in="file.in" out="file.out" out_mode="w"/>
+      <sub source="#NUMBER#">$number</sub>
+    </substituteset>
+    <fileset name="files">
+      <copy>file.in</copy>
+    </fileset>
+    <step name="sub_step">
+      <use>param_set</use>
+      <use>files</use>
+      <use>substitute</use>
+      <do>cat file.out</do>
+    </step>
+  </benchmark>
+</jube>

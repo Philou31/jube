@@ -1,0 +1,157 @@
+Start of Lmod init/bash script to define the module command
+End of Lmod init/bash script to define the module command
+MPI_proc	Size	CPU	Processor
+0	4	1	jrc0263
+MPI_proc	OMP_thread	Size	CPU
+0	1	2	0
+0	1	2	1
+MPI_proc	Size	CPU	Processor
+1	4	3	jrc0263
+MPI_proc	OMP_thread	Size	CPU
+1	1	2	2
+1	1	2	3
+MPI_proc	Size	CPU	Processor
+2	4	1	jrc0264
+MPI_proc	OMP_thread	Size	CPU
+MUMPS initialization
+2	1	2	0
+2	1	2	1
+MUMPS initialization
+MPI_proc	Size	CPU	Processor
+3	4	3	jrc0264
+MPI_proc	OMP_thread	Size	CPU
+Getting matrix in file: /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/jac.mm
+3	1	2	2
+3	1	2	3
+Matrix of size n: 49152, nz: 340870
+MUMPS initialization
+MUMPS initialization
+1	1	2e-06
+2	1	6.1693e-28
+3	1	-1e-06
+4	1	-3.08465e-28
+769	1	-1e-06
+770	1	-3.08465e-28
+1	2	-4.88281
+2	2	2.21875
+769	2	1.21431e-09
+770	2	-1.33178e-22
+Getting matrix in file: /work/eocoe/eocoe26/data/SHEMAT-Suite/mphase/small/F.mm
+Entering DMUMPS 5.1.1 from C interface with JOB, N, NNZ =   6       49152         340870
+      executing #MPI =      4 and #OMP =      2
+ =================================================
+ MUMPS compiled with option -Dmetis
+ MUMPS compiled with option -Dparmetis
+ =================================================
+L U Solver for unsymmetric matrices
+Type of parallelism: Working host
+
+ ****** ANALYSIS STEP ********
+
+ ... Structural symmetry (in percent)=   71
+ Average density of rows/columns =    8
+ ... No column permutation
+ Ordering based on METIS
+ ELAPSED TIME SPENT IN METIS reordering  =      0.2488
+ ... Structural symmetry (in percent)=   71
+ Average density of rows/columns =    8
+
+Leaving analysis phase with  ...
+INFOG(1)                                       =               0
+INFOG(2)                                       =               0
+ -- (20) Number of entries in factors (estim.) =         4242200
+ --  (3) Storage of factors  (REAL, estimated) =         4242200
+ --  (4) Storage of factors  (INT , estimated) =          762452
+ --  (5) Maximum frontal size      (estimated) =             411
+ --  (6) Number of nodes in the tree           =           15410
+ -- (32) Type of analysis effectively used     =               1
+ --  (7) Ordering option effectively used      =               5
+ICNTL(6) Maximum transversal option            =               0
+ICNTL(7) Pivot order option                    =               5
+Percentage of memory relaxation (effective)    =              20
+Number of level 2 nodes                        =               0
+Number of split nodes                          =               1
+RINFOG(1) Operations during elimination (estim)=   5.275D+08
+ ** Rank of proc needing largest memory in IC facto        :               1
+ ** Estimated corresponding MBYTES for IC facto            :              23
+ ** Estimated avg. MBYTES per work. proc at facto (IC)     :              22
+ ** TOTAL     space in MBYTES for IC factorization         :              88
+ ** Rank of proc needing largest memory for OOC facto      :               0
+ ** Estimated corresponding MBYTES for OOC facto           :              15
+ ** Estimated avg. MBYTES per work. proc at facto (OOC)    :              14
+ ** TOTAL     space in MBYTES for OOC factorization        :              58
+ ELAPSED TIME IN ANALYSIS DRIVER=       0.3154
+
+ ****** FACTORIZATION STEP ********
+
+
+ GLOBAL STATISTICS PRIOR NUMERICAL FACTORIZATION ...
+ NUMBER OF WORKING PROCESSES              =               4
+ OUT-OF-CORE OPTION (ICNTL(22))           =               0
+ REAL SPACE FOR FACTORS                   =         4242200
+ INTEGER SPACE FOR FACTORS                =          762452
+ MAXIMUM FRONTAL SIZE (ESTIMATED)         =             411
+ NUMBER OF NODES IN THE TREE              =           15410
+ MEMORY ALLOWED (MB -- 0: N/A )           =               0
+ RELATIVE THRESHOLD FOR PIVOTING, CNTL(1) =      0.1000D-01
+ Convergence error after scaling for ONE-NORM (option 7/8)   = 0.79D+00
+  ZERO PIVOT DETECTION ON, THRESHOLD          =  2.542356559864699E-021
+ INFINITE FIXATION 
+ Maximum effective relaxed size of S              =         1572193
+ Average effective relaxed size of S              =         1424001
+ ELAPSED TIME FOR MATRIX DISTRIBUTION      =      0.0124
+ ** Memory relaxation parameter ( ICNTL(14)  )            :        20
+ ** Rank of processor needing largest memory in facto     :         1
+ ** Space in MBYTES used by this processor for facto      :        23
+ ** Avg. Space in MBYTES per working proc during facto    :        22
+
+ ELAPSED TIME FOR FACTORIZATION           =      0.0563
+ Maximum effective space used in S     (KEEP8(67))          1293769
+ Average effective space used in S     (KEEP8(67))          1179499
+ ** EFF Min: Rank of processor needing largest memory :         0
+ ** EFF Min: Space in MBYTES used by this processor   :        20
+ ** EFF Min: Avg. Space in MBYTES per working proc    :        19
+
+-------------- Beginning of BLR statistics ---------------------------------
+ Settings for Block Low-Rank (BLR) are :
+  BLR algorithm characteristics :
+     Variant used: FSCU (Factor-Solve-Compress-Update)
+     Target BLR block size (variable)         = 128 - 512
+     RRQR precision (epsilon)                 = 0.0E+00
+ Statistics after BLR factorization :
+     Number of BLR fronts   =       0
+     Statistics on operation counts (OPC):
+     Total theoretical full-rank OPC (i.e. FR OPC)    = 5.275E+08 (100.0%)
+     Total effective OPC                   (% FR OPC) = 5.275E+08 (100.0%)
+-------------- End of BLR statistics ---------------------------------------
+
+ GLOBAL STATISTICS 
+ RINFOG(2)  OPERATIONS IN NODE ASSEMBLY   = 6.301D+06
+ ------(3)  OPERATIONS IN NODE ELIMINATION= 5.275D+08
+ INFOG (9)  REAL SPACE FOR FACTORS        =         4242200
+ INFOG(10)  INTEGER SPACE FOR FACTORS     =          762452
+ INFOG(11)  MAXIMUM FRONT SIZE            =             411
+ INFOG(29)  NUMBER OF ENTRIES IN FACTORS  =         4242200
+ INFOG(12)  NUMBER OF OFF DIAGONAL PIVOTS =               0
+ INFOG(13)  NUMBER OF DELAYED PIVOTS      =               0
+ NB OF NULL PIVOTS DETECTED BY ICNTL(24)  =               0
+ INFOG(28)  ESTIMATED DEFICIENCY          =               0
+ INFOG(14)  NUMBER OF MEMORY COMPRESS     =               0
+ ELAPSED TIME IN FACTORIZATION DRIVER=       0.0764
+
+
+ ****** SOLVE & CHECK STEP ********
+
+ ELAPSED TIME IN SOLVE DRIVER=       0.0001
+ ** ERROR RETURN ** FROM DMUMPS INFO(1)=  -29
+ ** INFO(2)=               0
+ ** ERROR RETURN ** FROM DMUMPS INFO(1)=  -29
+ ** INFO(2)=               0
+ On return from DMUMPS, INFOG(1)=             -29
+ On return from DMUMPS, INFOG(2)=               0
+Entering DMUMPS 5.1.1 from C interface with JOB =  -2
+      executing #MPI =      4 and #OMP =      2
+ ** ERROR RETURN ** FROM DMUMPS INFO(1)=  -29
+ ** INFO(2)=               0
+ ** ERROR RETURN ** FROM DMUMPS INFO(1)=  -29
+ ** INFO(2)=               0

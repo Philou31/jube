@@ -1,0 +1,4 @@
+table_output_num:
+jube_run_id | ops_elimination_est | ops_elimination | off_diag_pivots | negative_pivots | delayed_pivots | pivots_2x2_node1 | pivots_2x2_node2 | null_pivots | deficiency_est
+------------+---------------------+-----------------+-----------------+-----------------+----------------+------------------+------------------+-------------+---------------
+          0 |               1.525 |            2.09 |           96008 |                 |          27837 |                  |                  |           0 |              0

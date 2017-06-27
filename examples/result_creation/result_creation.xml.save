@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="result_creation" outpath="bench_run">
+    <comment>A result creation example</comment>
+    
+    <!-- Configuration -->
+    <parameterset name="param_set">
+      <!-- Create a parameterspace with one template parameter -->
+      <parameter name="number" type="int">1</parameter>
+    </parameterset>
+    
+    <!-- Regex pattern -->
+    <patternset name="pattern">
+      <pattern name="number_pat" type="int">Number: $jube_pat_int</pattern>
+      <pattern name="real_space_est" type="int"> REAL SPACE FOR FACTORS                   =[" "]*${jube_pat_int}</pattern>
+    </patternset>
+    
+    <!-- Operation -->
+    <step name="write_number">
+      <use>param_set</use> <!-- use existing parameterset -->
+      <do>echo "Number: $number"</do> <!-- shell command -->
+    </step>
+    
+    <!-- Analyse -->
+    <analyser name="analyse">
+      <use>pattern</use> <!-- use existing patternset -->
+      <analyse step="write_number">
+        <file>stdout</file> <!-- file which should be scanned -->
+	<file>${jube_benchmark_home}/job.out</file>
+      </analyse>
+    </analyser>
+    
+    <!-- Create result table -->
+    <result>
+      <use>analyse</use> <!-- use existing analyser -->
+      <table name="result" style="pretty" sort="number">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>number</column>
+        <column>number_pat</column>
+        <column>real_space_est</column>
+      </table>
+    </result>
+
+    <!-- analyse and result for exec times -->
+    <patternset name="pattern_output">
+      <pattern name="analysis" type="float">ELAPSED TIME IN ANALYSIS DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="facto" type="float">ELAPSED TIME IN FACTORIZATION DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="solve" type="float">ELAPSED TIME IN SOLVE DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="real_space_est" type="int"> REAL SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="int_space_est" type="int"> INTEGER SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_front_size_est" type="int"> MAXIMUM FRONTAL SIZE (ESTIMATED)         =[" "]*${jube_pat_int}
+ MAXIMUM FRONTAL SIZE (ESTIMATED)[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="real_space" type="int"> INFOG (9)  REAL SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="int_space" type="int"> INFOG(10)  INTEGER SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_front_size" type="int"> INFOG(11)  MAXIMUM FRONT SIZE[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="S_max_space" type="int"> Maximum effective space used in S     (KEEP8(67))[" "]*${jube_pat_int}</pattern>
+      <pattern name="S_avg_space" type="int"> Average effective space used in S     (KEEP8(67))[" "]*${jube_pat_int}</pattern>
+      <pattern name="ops_elimination_est" type="float">RINFOG(1) Operations during elimination (estim)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="ops_elimination" type="float"> ------(3)  OPERATIONS IN NODE ELIMINATION=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="off_diag_pivots" type="int"> INFOG(12)  NUMBER OF OFF DIAGONAL PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="negative_pîvots" type="int"> INFOG(12)  NUMBER OF NEGATIVE PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="delayed_pivots" type="int"> INFOG(13)  NUMBER OF DELAYED PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="pivots_2x2_node1" type="int"> NUMBER OF 2x2 PIVOTS in type 1 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="pivots_2x2_node2" type="int"> NUMBER OF 2x2 PIVOTS in type 2 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="null_pivots" type="int"> NB OF NULL PIVOTS DETECTED BY ICNTL(24)[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="deficiency_est" type="int"> INFOG(28)  ESTIMATED DEFICIENCY[" "]*=[" "]*${jube_pat_int}</pattern>
+    </patternset>
+
+    <step name="run">
+      <do>echo "computing tables..."</do>
+    </step>
+
+    <analyser name="analyse_output">
+      <analyse step="run">
+        <file use="pattern_output">${jube_benchmark_home}/job.out</file> <!-- file which should be scanned -->
+      </analyse>
+    </analyser>
+    
+    <result name="result_output">
+      <use>analyse_output</use> <!-- use existing analyser -->
+      <table name="table_output" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
+        <column>facto</column>
+        <column>solve</column>
+      </table>
+      <table name="table_output_mem" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>real_space_est</column>
+        <column>int_space_est</column>
+        <column>max_front_size_est</column>
+        <column>real_space</column>
+        <column>int_space</column>
+        <column>max_front_size</column>
+        <column>S_max_space</column>
+        <column>S_avg_space</column>
+      </table>
+      <table name="table_output_num" style="pretty">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>ops_elimination_est</column>
+        <column>ops_elimination</column>
+        <column>off_diag_pivots</column>
+        <column>negative_pivots</column>
+        <column>delayed_pivots</column>
+        <column>pivots_2x2_node1</column>
+        <column>pivots_2x2_node2</column>
+        <column>null_pivots</column>
+        <column>deficiency_est</column>
+      </table>
+      <table name="table_output_csv" type="csv">
+        <column title="jube_run_id">jube_wp_id</column>
+        <column>mode</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis(s)</column>
+        <column>facto(s)</column>
+        <column>solve(s)</column>
+      </table>
+    </result>
+
+  </benchmark>
+</jube>

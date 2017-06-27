@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube version="2.1.3">
+  <benchmark file_path_ref="../.." name="dependencies" outpath="..">
+    <comment>A Dependency example</comment>
+    <parameterset name="param_set">
+      <parameter mode="text" name="number" separator="," type="int">1,2,4</parameter>
+    </parameterset>
+    <step name="first_step">
+      <use>param_set</use>
+      <do>echo $number</do>
+    </step>
+    <step depend="first_step" name="second_step">
+      <do>cat first_step/stdout</do>
+    </step>
+  </benchmark>
+</jube>

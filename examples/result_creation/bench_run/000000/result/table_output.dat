@@ -1,0 +1,4 @@
+table_output:
+jube_run_id | mode | nodes | taskspernode | threadspertask | analysis |   facto | solve
+------------+------+-------+--------------+----------------+----------+---------+------
+          0 |      |       |              |                |   5.0028 | 31.5201 | 1.602

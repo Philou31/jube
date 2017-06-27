@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workpackages>
+  <workpackage id="0">
+    <step iteration="0">first_step</step>
+    <parameterset>
+      <parameter mode="text" name="number" selection="1" separator="," type="int">1,2,4</parameter>
+    </parameterset>
+    <iteration_siblings>0</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'2'</env>
+      <nonenv name="PS1"/>
+    </environment>
+  </workpackage>
+  <workpackage id="1">
+    <step iteration="0">first_step</step>
+    <parameterset>
+      <parameter mode="text" name="number" selection="2" separator="," type="int">1,2,4</parameter>
+    </parameterset>
+    <iteration_siblings>1</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'2'</env>
+      <nonenv name="PS1"/>
+    </environment>
+  </workpackage>
+  <workpackage id="2">
+    <step iteration="0">first_step</step>
+    <parameterset>
+      <parameter mode="text" name="number" selection="4" separator="," type="int">1,2,4</parameter>
+    </parameterset>
+    <iteration_siblings>2</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'2'</env>
+      <nonenv name="PS1"/>
+    </environment>
+  </workpackage>
+  <workpackage id="3">
+    <step iteration="0">second_step</step>
+    <parents>0</parents>
+    <iteration_siblings>3</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'2'</env>
+      <nonenv name="PS1"/>
+    </environment>
+  </workpackage>
+  <workpackage id="4">
+    <step iteration="0">second_step</step>
+    <parents>1</parents>
+    <iteration_siblings>4</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'2'</env>
+      <nonenv name="PS1"/>
+    </environment>
+  </workpackage>
+  <workpackage id="5">
+    <step iteration="0">second_step</step>
+    <parents>2</parents>
+    <iteration_siblings>5</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'2'</env>
+      <nonenv name="PS1"/>
+    </environment>
+  </workpackage>
+</workpackages>

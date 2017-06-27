@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workpackages>
+  <workpackage id="0">
+    <step iteration="0">run</step>
+    <iteration_siblings>0</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'3'</env>
+    </environment>
+  </workpackage>
+  <workpackage id="1">
+    <step iteration="0">write_number</step>
+    <parameterset>
+      <parameter mode="text" name="number" separator="," type="int">1</parameter>
+    </parameterset>
+    <iteration_siblings>1</iteration_siblings>
+    <environment>
+      <env name="SHLVL">'3'</env>
+    </environment>
+  </workpackage>
+</workpackages>
