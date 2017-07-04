@@ -5,7 +5,7 @@
      <path>../platform/nemo</path> 
    </include-path>
   <!-- set benchmark name and output folder -->
-  <benchmark name="Mumps" outpath="output_folder">
+  <benchmark name="Mumps" outpath="output_folder_PAR0">
     <comment>A comment</comment>
 
     <!-- load tag mode handling for the compile step -->
@@ -16,6 +16,8 @@
 
     <!-- compile parametrisation -->
     <parameterset name="compile_param" init_with="compile_param.xml">
+      <parameter name="Makefile">Makefile</parameter>
+      <parameter name="executable_file">mumps_$arc_file-$arc_file_version-$compile_mode</parameter>
     </parameterset>
 
     <!-- substitute parts of the source files -->
@@ -27,6 +29,7 @@
       <sub source="DISTR =">DISTR = $distr_folder#</sub>
       <sub source="BUILD =">BUILD = $build_folder#</sub>
       <sub source="EXEC =">EXEC = ${executable_file}#</sub>
+      <sub source="MUMPS_5.1.1" tag="all">MUMPS_5.1.1_SCOREP#</sub>
     </substituteset>
  
     <!-- source files needed for compile -->
@@ -43,7 +46,7 @@
       <use>sub_source_files</use> <!-- substitute parts of the source files -->
       <do tag="!no_compile">
 	 $module_list
-         make -f $jube_benchmark_home/Makefile ARCH=$arc_file VERSION=$arc_file_version JUBE_HOME=$jube_benchmark_home
+         make -f $jube_benchmark_home/$Makefile ARCH=$arc_file VERSION=$arc_file_version JUBE_HOME=$jube_benchmark_home
          mkdir -p ${jube_benchmark_home}/${exec_archive}/
          cp ${distr_folder}/${executable_file} ${jube_benchmark_home}/${exec_archive}/
       </do> <!-- compilation commands -->
@@ -59,9 +62,9 @@
 
     <!-- set job specific parameter by overwritting the platform default configuration, see platform.xml -->
     <parameterset name="systemParameter" init_with="platform.xml">
-        <parameter name="nodes" type="int">2</parameter>
+        <parameter name="nodes" type="int">4</parameter>
         <parameter name="taskspernode" type="int">2</parameter>
-        <parameter name="threadspertask" type="int">12</parameter>
+        <parameter name="threadspertask" type="int">8</parameter>
 	<!-- Strong Scaling -->
         <parameter name="nodes" type="int" tag="strong_scale">1,2,4,8,15</parameter>
         <parameter name="taskspernode" type="int" tag="strong_scale">2</parameter>
@@ -69,9 +72,9 @@
 	<!-- Sequential -->
         <parameter name="nodes" type="int" tag="seq">1</parameter>
         <parameter name="taskspernode" type="int" tag="seq">1</parameter>
-        <parameter name="threadspertask" type="int" tag="seq">1</parameter>
+        <parameter name="threadspertask" type="int" tag="seq">1,2,4,8,12</parameter>
         <parameter name="executable">compile/${distr_folder}/${executable_file}</parameter> 
-        <parameter name="args_exec">$input_files $distribution $arguments $error_analysis $percent_relaxation $solution_distributed $BLR</parameter>
+        <parameter name="args_exec">$input_files $input_files_par $working_host $distribution $arguments $error_analysis $percent_relaxation $solution_distributed $BLR</parameter>
         <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
         <parameter name="mail">leleux@cerfacs.fr</parameter>
         <parameter name="notification">ALL</parameter>
@@ -97,6 +100,7 @@
       <use>executeset</use> <!-- platform configuration -->
       <use from="platform.xml">executesub</use> <!-- substitution of job script template placeholders -->
       <use from="platform.xml">jobfiles</use> <!-- job script template -->
+      <use from="input_files_par.xml">par_input_files_par</use>
       <use from="input_files.xml">par_input_files</use>
       <use from="parameters.xml">execute_parameters</use>
       <use>inputs</use> <!-- needed input datasets -->
@@ -141,19 +145,44 @@
 
     <!-- analyse and result for exec times -->
     <patternset name="pattern_output">
+      <pattern name="matrix">Getting matrix in file:[" "]*([.a-zA-Z0-9\-_/]*)</pattern>
+      <pattern name="error1" type="int">On return from DMUMPS, INFOG\(1\)=[" "]*${jube_pat_int}</pattern>
+      <pattern name="error2" type="int">On return from DMUMPS, INFOG\(2\)=[" "]*${jube_pat_int}</pattern>
+      <!-- Runtimes -->
       <pattern name="analysis" type="float">[" "]*ELAPSED TIME IN ANALYSIS DRIVER=[" "]*${jube_pat_fp}</pattern>
       <pattern name="facto" type="float">[" "]*ELAPSED TIME IN FACTORIZATION DRIVER=[" "]*${jube_pat_fp}</pattern>
       <pattern name="solve" type="float">[" "]*ELAPSED TIME IN SOLVE DRIVER=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="facto_elim" type="float">[" "]*ELAPSED TIME FOR FACTORIZATION[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="forward_elim" type="float">[" "]*\.\. TIME in forward \(fwd\) step[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="backward_elim" type="float">[" "]*\.\. TIME in backward \(bwd\) step[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <!-- Facto Flops -->
+      <pattern name="ops_elimination_est" type="float">[" "]*RINFOG\(1\) Operations during elimination \(estim\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="ops_elimination" type="float">[" "]*------\(3\)  OPERATIONS IN NODE ELIMINATION=[" "]*${jube_pat_fp}</pattern>
+      <!-- Memory -->
       <pattern name="real_space_est" type="int">[" "]*REAL SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="int_space_est" type="int">[" "]*INTEGER SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="max_front_size_est" type="int">[" "]*MAXIMUM FRONTAL SIZE \(ESTIMATED\)[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="real_space" type="int">[" "]*INFOG \(9\)  REAL SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="int_space" type="int">[" "]*INFOG\(10\)  INTEGER SPACE FOR FACTORS[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="max_front_size" type="int">[" "]*INFOG\(11\)  MAXIMUM FRONT SIZE[" "]*=[" "]*${jube_pat_int}</pattern>
-      <pattern name="S_max_space" type="int">[" "]*Maximum effective space used in S[" "]*\(KEEP8\(67\)\)[" "]*[" "]*${jube_pat_int}</pattern>
-      <pattern name="S_avg_space" type="int">[" "]*Average effective space used in S[" "]*\(KEEP8\(67\)\)[" "]*[" "]*${jube_pat_int}</pattern>
-      <pattern name="ops_elimination_est" type="float">[" "]*RINFOG\(1\) Operations during elimination \(estim\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="ops_elimination" type="float">[" "]*------\(3\)  OPERATIONS IN NODE ELIMINATION=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="max_space_S" type="int">[" "]*Maximum effective space used in S[" "]*\(KEEP8\(67\)\)[" "]*[" "]*${jube_pat_int}</pattern>
+      <pattern name="avg_space_S" type="int">[" "]*Average effective space used in S[" "]*\(KEEP8\(67\)\)[" "]*[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_mem_facto" type="int">[" "]*\*\* Space in MBYTES used by this processor for facto[" "]*:[" "]*${jube_pat_int}</pattern>
+      <pattern name="avg_mem_facto" type="int">[" "]*\*\* Avg. Space in MBYTES per working proc during facto[" "]*:[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_mem_solve" type="int">[" "]*\*\* Space in MBYTES used by this processor for solve[" "]*:[" "]*${jube_pat_int}</pattern>
+      <pattern name="avg_mem_solve" type="int">[" "]*\*\* Avg. Space in MBYTES per working proc during solve[" "]*:[" "]*${jube_pat_int}</pattern>
+      <!-- Parameters -->
+      <pattern name="analysis_type" type="int">[" "]*-- \(32\) Type of analysis effectively used[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="ordering" type="int">[" "]*--  \(7\) Ordering option effectively used[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="max_transversal" type="int">[" "]*ICNTL\(6\) Maximum transversal option[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="pivot_ordering" type="int">[" "]*ICNTL\(7\) Pivot order option[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="rel_threshold_pivoting" type="int">[" "]*RELATIVE THRESHOLD FOR PIVOTING, CNTL\(1\)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="mem_relax" type="int">[" "]*Percentage of memory relaxation \(effective\)[" "]*=[" "]*${jube_pat_int}</pattern>
+      <!-- Nodes -->
+      <pattern name="level2_nodes" type="int">[" "]*Number of level 2 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="split_nodes" type="int">[" "]*Number of split nodes[" "]*=[" "]*${jube_pat_int}</pattern>
+      <pattern name="nb_nodes_tree" type="int">[" "]*NUMBER OF NODES IN THE TREE[" "]*=[" "]*${jube_pat_int}</pattern>
+      <!-- Pivots -->
       <pattern name="off_diag_pivots" type="int">[" "]*INFOG\(12\)  NUMBER OF OFF DIAGONAL PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="negative_pivots" type="int">[" "]*INFOG\(12\)  NUMBER OF NEGATIVE PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="delayed_pivots" type="int">[" "]*INFOG\(13\)  NUMBER OF DELAYED PIVOTS[" "]*=[" "]*${jube_pat_int}</pattern>
@@ -161,16 +190,7 @@
       <pattern name="pivots_2x2_node2" type="int">[" "]*NUMBER OF 2x2 PIVOTS in type 2 nodes[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="null_pivots" type="int">[" "]*NB OF NULL PIVOTS DETECTED BY ICNTL\(24\)[" "]*=[" "]*${jube_pat_int}</pattern>
       <pattern name="deficiency_est" type="int">[" "]*INFOG\(28\)  ESTIMATED DEFICIENCY[" "]*=[" "]*${jube_pat_int}</pattern>
-      <pattern name="residual_max_norm" type="float">[" "]*RESIDUAL IS ............ \(MAX-NORM\)[" "]*=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="residual_2_norm" type="float">[" "]*.. \(2-NORM\)[" "]*=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="A_max_norm" type="float">[" "]*RINFOG\(4\):NORM OF input  Matrix  \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="sol_max_norm" type="float">[" "]*RINFOG\(5\):NORM OF Computed SOLUT \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="scaled_res_max_norm" type="float">[" "]*RINFOG\(6\):SCALED RESIDUAL ...... \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="W1" type="float">[" "]*RINFOG\(7\):COMPONENTWISE SCALED RESIDUAL\(W1\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="W2" type="float">[" "]*------\(8\):---------------------------- \(W2\)=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="error_upper_bound" type="float">[" "]*------\(9\):Upper bound ERROR ...............=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="condition1" type="float">[" "]*-----\(10\):CONDITION NUMBER \(1\) ............=[" "]*${jube_pat_fp}</pattern>
-      <pattern name="condition2" type="float">[" "]*-----\(11\):CONDITION NUMBER \(2\) ............=[" "]*${jube_pat_fp}</pattern>
+      <!-- BLR -->
       <pattern name="min_BLR_block_size" type="int">[" "]*Target BLR block size \(variable\)[" "]*=[" "]*${jube_pat_int}[" "]*-[" "]*${jube_pat_nint}</pattern>
       <pattern name="max_BLR_block_size" type="int">[" "]*Target BLR block size \(variable\)[" "]*=[" "]*${jube_pat_nint}[" "]*-[" "]*${jube_pat_int}</pattern>
       <pattern name="RRQR_precision_espilon" type="float">[" "]*RRQR precision \(epsilon\)[" "]*=[" "]*${jube_pat_fp}</pattern>
@@ -179,6 +199,18 @@
       <pattern name="percent_full_rank_OPC" type="int">[" "]*Total theoretical full-rank OPC \(i.e. FR OPC\)[" "]*=[" "]*${jube_pat_nfp} \(${jube_pat_fp}%\)</pattern>
       <pattern name="effective_OPC" type="float">[" "]*Total effective OPC[" "]*\(% FR OPC\)[" "]*=[" "]*${jube_pat_fp} \( ${jube_pat_nfp}%\)</pattern>
       <pattern name="percent_effective_OPC" type="int">[" "]*Total effective OPC[" "]*\(% FR OPC\)[" "]*=[" "]*${jube_pat_nfp} \( ${jube_pat_fp}\)</pattern>
+      <!-- Pb Conditioning -->
+      <pattern name="A_max_norm" type="float">[" "]*RINFOG\(4\):NORM OF input  Matrix  \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="condition1" type="float">[" "]*-----\(10\):CONDITION NUMBER \(1\) ............=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="condition2" type="float">[" "]*-----\(11\):CONDITION NUMBER \(2\) ............=[" "]*${jube_pat_fp}</pattern>
+      <!-- Error Analysis -->
+      <pattern name="residual_max_norm" type="float">[" "]*RESIDUAL IS ............ \(MAX-NORM\)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="residual_2_norm" type="float">[" "]*.. \(2-NORM\)[" "]*=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="sol_max_norm" type="float">[" "]*RINFOG\(5\):NORM OF Computed SOLUT \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="scaled_res_max_norm" type="float">[" "]*RINFOG\(6\):SCALED RESIDUAL ...... \(MAX-NORM\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="W1" type="float">[" "]*RINFOG\(7\):COMPONENTWISE SCALED RESIDUAL\(W1\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="W2" type="float">[" "]*------\(8\):---------------------------- \(W2\)=[" "]*${jube_pat_fp}</pattern>
+      <pattern name="error_upper_bound" type="float">[" "]*------\(9\):Upper bound ERROR ...............=[" "]*${jube_pat_fp}</pattern>
     </patternset>
 
     <analyser name="analyse_output">
@@ -197,113 +229,82 @@
         <column>analysis</column>
         <column>facto</column>
         <column>solve</column>
-      </table>
-      <table name="table_output_mem" style="pretty">
-        <column title="jube_run_id">jube_wp_id</column>
-        <column>mode</column>
-        <column>tasks</column>
-        <column>threadspertask</column>
-        <column>real_space_est</column>
-        <column>int_space_est</column>
-        <column>max_front_size_est</column>
-        <column>real_space</column>
-        <column>int_space</column>
-        <column>max_front_size</column>
-        <column>S_max_space</column>
-        <column>S_avg_space</column>
-      </table>
-      <table name="table_output_num" style="pretty">
-        <column title="jube_run_id">jube_wp_id</column>
-        <column>mode</column>
-        <column>tasks</column>
-        <column>threadspertask</column>
-        <column>ops_elimination_est</column>
-        <column>ops_elimination</column>
-        <column>off_diag_pivots</column>
-        <column>negative_pivots</column>
-        <column>delayed_pivots</column>
-        <column>pivots_2x2_node1</column>
-        <column>pivots_2x2_node2</column>
-        <column>null_pivots</column>
-        <column>deficiency_est</column>
-      </table>
-      <table name="table_output_EA" style="pretty">
-        <column title="jube_run_id">jube_wp_id</column>
-        <column>mode</column>
-        <column>tasks</column>
-        <column>threadspertask</column>
-        <column>residual_max_norm</column>
-        <column>residual_2_norm</column>
-        <column>A_max_norm</column>
-        <column>sol_max_norm</column>
-        <column>scaled_res_max_norm</column>
-        <column>W1</column>
-        <column>W2</column>
-        <column>error_upper_bound</column>
-        <column>condition1</column>
-        <column>condition2</column>
+        <column>facto_elim</column>
+        <column>forward_elim</column>
+        <column>backward_elim</column>
       </table>
       <table name="table_output_csv" type="csv">
-        <column title="jube_run_id">jube_wp_id</column>
-        <column>mode</column>
-        <column>tasks</column>
-        <column>threadspertask</column>
-        <column>analysis</column>
-        <column>facto</column>
-        <column>solve</column>
-        <column title="solve_EA">solve_last</column>
-        <column>real_space_est</column>
-        <column>real_space</column>
-        <column>ops_elimination_est</column>
-        <column>ops_elimination</column>
-        <column>off_diag_pivots</column>
-        <column>negative_pivots</column>
-        <column>delayed_pivots</column>
-        <column>pivots_2x2_node1</column>
-        <column>pivots_2x2_node2</column>
-        <column>null_pivots</column>
-        <column>deficiency_est</column>
-        <column>residual_max_norm</column>
-        <column>residual_2_norm</column>
-        <column>A_max_norm</column>
-        <column>sol_max_norm</column>
-        <column>scaled_res_max_norm</column>
-        <column>W1</column>
-        <column>W2</column>
-        <column>error_upper_bound</column>
-        <column>condition1</column>
-        <column>condition2</column>
+        <column title="id">jube_wp_id</column>
+	<column>mode</column>
+	<column title="#MPI">tasks</column>
+	<column title="#OpenMP">threadspertask</column>
+	<column>matrix</column>
+	<column>error1</column>
+	<column>error2</column>
+	<!-- Runtimes -->
+	<column title="Analysis(s)">analysis</column>
+	<column title="Facto(s)">facto</column>
+	<column title="Solve(s)">solve</column>
+	<column title="Facto Elimination(s)">facto_elim</column>
+	<column title="Forward Elim(s)">forward_elim</column>
+	<column title="Backward Elim(s)">backward_elim</column>
+	<!-- Facto Flops -->
+	<column title="Facto Flops(Est.)">ops_elimination_est</column>
+	<column title="Facto Flops">ops_elimination</column>
+	<!-- Memory -->
+	<column title="Real Space(Est.)">real_space_est</column>
+	<column title="Integer Space(Est.)">int_space_est</column>
+	<column title="Max Front Size(Est.)">max_front_size_est</column>
+	<column title="Real Space">real_space</column>
+	<column title="Integer Space">int_space</column>
+	<column title="Max Front Size">max_front_size</column>
+	<column title="Max Space Used in S">max_space_S</column>
+	<column title="Avg Space Used in S">avg_space_S</column>
+	<column title="Max Space Facto(Mb)">max_mem_facto</column>
+	<column title="Avg Space Facto(Mb)">avg_mem_facto</column>
+	<column title="Max Space Solve(Mb)">max_mem_solve</column>
+	<column title="Avg Space Solve(Mb)">avg_mem_solve</column>
+	<!-- Parameters -->
+	<column title="Analysis Type">analysis_type</column>
+	<column title="Ordering">ordering</column>
+	<column title="Max. Transversal">max_transversal</column>
+	<column title="Pivot Ordering">pivot_ordering</column>
+	<column title="Pivoting Rel. Threshold">rel_threshold_pivoting</column>
+	<column title="Memory Relax.(%)">mem_relax</column>
+	<!-- Nodes -->
+	<column title="#Level2 Nodes">level2_nodes</column>
+	<column title="#Split Nodes">split_nodes</column>
+	<column title="#Nodes in Tree">nb_nodes_tree</column>
+	<!-- Pivots -->
+	<column title="#Off Diagonal Pivots">off_diag_pivots</column>
+	<column title="#Negative Pivots">negative_pivots</column>
+	<column title="#Delayed Pivots">delayed_pivots</column>
+	<column title="#2x2 Pivots(type 1 node)">pivots_2x2_node1</column>
+	<column title="#2x2 Pivots(type 2 node)">pivots_2x2_node2</column>
+	<column title="#Null Pivots">null_pivots</column>
+	<column title="Deficiency(Est.)">deficiency_est</column>
+	<!-- BLR -->
+	<column title="BLR epsilon">RRQR_precision_espilon</column>
+	<column title="Min. BLR Block Size">min_BLR_block_size</column>
+	<column title="Max. BLR Block Size">max_BLR_block_size</column>
+	<column title="#BLR Fronts">BLR_fronts</column>
+	<column title="Facto Full-Rank Flops">full_rank_OPC</column>
+	<column title="Facto Full-Rank Flops(%)">percent_full_rank_OPC</column>
+	<column title="Facto BLR Flops">effective_OPC</column>
+	<column title="Facto BLR Flops(%)">percent_effective_OPC</column>
+	<!-- Pb Conditioning -->
+	<column title="A(Max-Norm)">A_max_norm</column>
+	<column title="condition1">condition1</column>
+	<column title="condition2">condition2</column>
+	<!-- Error Analysis -->
+	<column title="Residual(Max-Norm)">residual_max_norm</column>
+	<column title="Residual(2-Norm)">residual_2_norm</column>
+	<column title="Sol(Max Norm)">sol_max_norm</column>
+	<column title="Scaled Residual(Max-Norm)">scaled_res_max_norm</column>
+	<column title="W1">W1</column>
+	<column title="W2">W2</column>
+	<column title="Error Upper Bound">error_upper_bound</column>
       </table>
-
-      <table name="table_output_BLR" style="pretty" tag="BLR">
-        <column title="jube_run_id">jube_wp_id</column>
-        <column>mode</column>
-        <column>tasks</column>
-        <column>threadspertask</column>
-	<column>min_BLR_block_size</column>
-	<column>max_BLR_block_size</column>
-	<column>RRQR_precision_espilon</column>
-	<column>BLR_fronts</column>
-	<column>full_rank_OPC</column>
-	<column>percent_full_rank_OPC</column>
-	<column>effective_OPC</column>
-	<column>percent_effective_OPC</column>
-      </table>
-      <table name="table_output_BLR_csv" type="csv" tag="BLR">
-        <column title="jube_run_id">jube_wp_id</column>
-        <column>mode</column>
-        <column>tasks</column>
-        <column>threadspertask</column>
-	<column>min_BLR_block_size</column>
-	<column>max_BLR_block_size</column>
-	<column>RRQR_precision_espilon</column>
-	<column>BLR_fronts</column>
-	<column>full_rank_OPC</column>
-	<column>percent_full_rank_OPC</column>
-	<column>effective_OPC</column>
-	<column>percent_effective_OPC</column>
-      </table>
-
     </result>
 
   </benchmark>

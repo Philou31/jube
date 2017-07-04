@@ -30,6 +30,7 @@ int main (int argc, char **argv) {
     cmdline::parser a;
     a.add<std::string>("matrix", 'A', "Matrix A file", true, "");
     a.add<std::string>("RHS", 'B', "Matrix B file", false, "");
+    a.add<int>("working_host", 'C', "Host working or not", false, 1, cmdline::oneof<int>(0, 1));
     a.add<int>("symmetry", '+', "Symmetry of the Matrix", false, 0, cmdline::oneof<int>(0, 1, 2));
     a.add<int>("zeros", '#', "Number of 0s in RHS after 1s", false, 0);
     a.add<int>("ic01", '1', "output 1", false, 6, cmdline::oneof<int>(0, 6));
@@ -155,7 +156,7 @@ if (nb_procs!=1) {
     /* Initialize a MUMPS instance . Use MPI_COMM_WORLD . */
     std::cout << "MUMPS initialization\n";
     id.sym = a.get<int>("symmetry");	// symmetry
-    id.par = 1;	// working host
+    id.par = a.get<int>("working_host");	// working host
     id.comm_fortran = -987654;	// MPI_COMM_WORLD
     id.job = -1;	// Initialization
     dmumps_c(&id);

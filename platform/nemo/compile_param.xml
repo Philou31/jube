@@ -6,7 +6,6 @@
       <parameter name="distr_folder">distr</parameter>
       <parameter name="build_folder">build</parameter>
       <parameter name="src_folder">src</parameter>
-      <parameter name="executable_file">mumps_$arc_file-$arc_file_version-$compile_mode</parameter>
       <parameter name="exec_archive">distr_archive</parameter>
       <parameter name="module_list">
 	source /scratch/algo/leleux/start_system/start_system.intel_2017.sh

@@ -15,8 +15,8 @@ MKL_HOME = /data/softs/intel/compilers_and_libraries_2017/linux/mkl
 #####################################
 CC = mpiicpc
 LD = mpiicpc
-CFLAGS=-c -O2 -Wall $(IMUMPS) -std=c++11 -MMD -MP -qopenmp
-LDFLAGS=$(LMUMPS) $(LSCOTCH) $(LPARMETIS) $(LMETIS) $(LSCALAPACK) $(LBLAS) $(LIOMP) -std=c++11 -qopenmp -lifcore
+CFLAGS=-c -O2 -Wall $(IMUMPS) -std=c++11 -MMD -MP -qopenmp -fPIC
+LDFLAGS=$(LMUMPS) $(LSCOTCH) $(LPARMETIS) $(LMETIS) $(LSCALAPACK) $(LBLAS) $(LIOMP) -std=c++11 -qopenmp -lifcore -fPIC
 
 #####################################
 ## LIBRARIES

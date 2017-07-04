@@ -1,0 +1,44 @@
+<jube>
+  <!-- Definition of all available input and parameters specified per tags
+       Available inputs:
+	mphase-small, mphase-big, mpmc-small, mpmc-big, MHD10, MHD50, MHD100, MHD150
+       Available parameters:
+       default: ref
+       Unused options can be redefined
+    -->
+  <parameterset name="par_input_files_par">
+        <parameter name="input_files_par" tag="mphase_small"></parameter>
+        <parameter name="input_files_par" tag="mphase_big"></parameter>
+        <parameter name="input_files_par" tag="mpmc_small"></parameter>
+        <parameter name="input_files_par" tag="mpmc_big"></parameter>
+        <parameter name="input_files_par" tag="fine7"></parameter>
+        <parameter name="input_files_par" tag="fine8"></parameter>
+        <parameter name="input_files_par" tag="MHD10"></parameter>
+        <parameter name="input_files_par" tag="MHD50"></parameter>
+        <parameter name="input_files_par" tag="MHD100"></parameter>
+        <parameter name="input_files_par" tag="MHD150"></parameter>
+        <parameter name="input_files_par" tag="HHG_laplace_A"></parameter>
+        <parameter name="input_files_par" tag="HHG_stokes_A"></parameter>
+        <parameter name="input_files_par" tag="HHG_rad8tan8_A"></parameter>
+        <parameter name="input_files_par" tag="HHG_rad8tan16_A"></parameter>
+        <parameter name="input_files_par" tag="HHG_laplace"></parameter>
+        <parameter name="input_files_par" tag="HHG_stokes"></parameter>
+        <parameter name="input_files_par" tag="HHG_rad8tan8"></parameter>
+        <parameter name="input_files_par" tag="HHG_rad8tan16"></parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_inertia_divertor">--nbparts 128 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_inertia_limiter_big">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_inertia_limiter_medium">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_inertia_limiter_small">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_noinertia_divertor">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_noinertia_limiter_big">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_noinertia_limiter_medium">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="TOKAM3X_noinertia_limiter_small">--nbparts 32 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="cage14">--nbparts 1024 --block_size 1</parameter>
+        <parameter name="input_files_par" tag="bayer01">--nbparts 16 --block_size 8</parameter>
+        <parameter name="input_files_par" tag="cage13">--nbparts 256 --block_size 1</parameter>
+        <parameter name="input_files_par" tag="gre_1107">--nbparts 5 --block_size 8</parameter>
+	<parameter name="input_files_par" tag="Hamrle3">--nbparts 128 --block_size 4</parameter>
+        <parameter name="input_files_par" tag="lhr71c">--nbparts 16 --block_size 32</parameter>
+        <parameter name="input_files_par" tag="torso3">--nbparts 32 --block_size 1</parameter>
+  </parameterset>
+</jube>

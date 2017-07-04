@@ -5,18 +5,26 @@
      <path>../platform/nemo</path> 
    </include-path>
   <!-- set benchmark name and output folder -->
-  <benchmark name="ABCD" outpath="output_folder_Perf">
+  <benchmark name="code_name" outpath="output_folder">
     <comment>A comment</comment>
 
     <!-- load tag mode handling for the compile step -->
     <parameterset name="compile_modes" init_with="eocoe_jube.xml">
       <!-- all different run modeas are disabled by default, remove one of following line to activiate the corresponding run mode-->
       <parameter name="darshan_mode"></parameter>
+      <parameter name="scatter_mode"></parameter>
+      <parameter name="compact_mode"></parameter>
     </parameterset>
 
     <!-- compile parametrisation -->
     <parameterset name="compile_param" init_with="compile_param.xml">
+      <parameter name="arc_file">Jureca</parameter>
+      <parameter name="arc_file_version">0.1</parameter>
+      <parameter name="distr_folder">distr</parameter>
+      <parameter name="build_folder">build</parameter>
+      <parameter name="src_folder">src</parameter>
       <parameter name="executable_file">abcd_$arc_file-$arc_file_version-$compile_mode</parameter>
+      <parameter name="exec_archive">distr_archive</parameter>
     </parameterset>
 
     <!-- substitute parts of the source files -->
@@ -28,7 +36,6 @@
       <sub source="DISTR =">DISTR = $distr_folder#</sub>
       <sub source="BUILD =">BUILD = $build_folder#</sub>
       <sub source="EXEC =">EXEC = ${executable_file}#</sub>
-      <sub source="abcd_dev" tag="all">abcd_dev_SCOREP#</sub>
     </substituteset>
  
     <!-- source files needed for compile -->
@@ -60,21 +67,55 @@
 
     <!-- set job specific parameter by overwritting the platform default configuration, see platform.xml -->
     <parameterset name="systemParameter" init_with="platform.xml">
-        <parameter name="nodes" type="int">4</parameter>
+        <parameter name="nodes" type="int">8</parameter>
         <parameter name="taskspernode" type="int">2</parameter>
         <parameter name="threadspertask" type="int">4</parameter>
 	<!-- Strong Scaling -->
-        <parameter name="nodes" type="int" tag="strong_scale">1,2,4,8,12</parameter>
-        <parameter name="threadspertask" type="int" tag="strong_scale">4</parameter>
+        <parameter name="nodes" type="int" tag="strong_scale">1</parameter>
+        <parameter name="threadspertask" type="int" tag="strong_scale">1,2,4,8,12</parameter>
 	<!-- Sequential -->
         <parameter name="nodes" type="int" tag="seq">1</parameter>
         <parameter name="taskspernode" type="int" tag="seq">1</parameter>
-        <parameter name="threadspertask" type="int" tag="seq">4</parameter>
+        <parameter name="threadspertask" type="int" tag="seq">1</parameter>
+	<parameter name="queue">prod</parameter>
         <parameter name="executable">compile/${distr_folder}/${executable_file}</parameter> 
-        <parameter name="args_exec">$input_files $input_files_par $nbparts $block_size --aug_blocking $aug_blocking $part_type --part_imbalance $part_imbalance $scaling $aug_type --threshold $threshold $verbose --itmax $itmax</parameter>
+        <parameter name="args_exec">$input_files $distribution $arguments $error_analysis $percent_relaxation $solution_distributed $BLR</parameter>
         <parameter name="scorep_filter_file">${jube_benchmark_home}/filter.txt</parameter>
+        <parameter name="mail">leleux@cerfacs.fr</parameter>
+	<parameter name="reservation">eocoe</parameter>
+        <parameter name="extended_env">
+           ${module_list}
+           export FORT_BUFFERED=$use_buffered_io
+        </parameter>
+        <parameter name="env" mode="python" separator=";">
+        {"darshan": """
+                ${extended_env}
+                module load darshan-runtime
+		export LD_PRELOAD=$$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so
+		export DARSHAN_LOG_PATH=$$PWD
+		export DARSHAN_LOGFILE=darshan.log
+                   """,
+         "papi": """
+                ${extended_env}
+                module load Scalasca
+                export SCOREP_TOTAL_MEMORY=350MB
+                export SCOREP_MPI_MAX_COMMUNICATORS=5000
+<!--                export SCOREP_METRIC_PAPI_PER_PROCESS=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM -->
+                export SCOREP_METRIC_PAPI=PAPI_TOT_INS,PAPI_TOT_CYC,PAPI_L3_TCA,PAPI_L3_TCM
+                   """,
+         "scalasca": """
+                ${extended_env}
+                module load Scalasca
+                unset SCAN_TRACE_FILESYS
+                export SCOREP_TOTAL_MEMORY=350MB
+                export SCOREP_MPI_MAX_COMMUNICATORS=5000
+                export SCAN_ANALYZE_OPTS=--single-pass
+                   """}.get("${mode}","""${extended_env}""")
+        </parameter>
+        <parameter name="notification">ALL</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
+        <parameter name="timelimit">12:00:00</parameter>
 	<parameter name="measurement" mode="python">
         {"scalasca" : "time scalasca -analyze -t -f $scorep_filter_file",
          "papi"     : "time scalasca -analyse -f $scorep_filter_file"}.get("$mode","time")
@@ -93,7 +134,6 @@
       <use>executeset</use> <!-- platform configuration -->
       <use from="platform.xml">executesub</use> <!-- substitution of job script template placeholders -->
       <use from="platform.xml">jobfiles</use> <!-- job script template -->
-      <use from="input_files_par.xml">par_input_files_par</use>
       <use from="input_files.xml">par_input_files</use>
       <use from="parameters.xml">execute_parameters</use>
       <use>inputs</use> <!-- needed input datasets -->
@@ -138,27 +178,7 @@
 
     <!-- analyse and result for exec times -->
     <patternset name="pattern_output">
-      <pattern name="matrix">Getting matrix in file[" "]*:[" "]*([.a-zA-Z0-9\-_/]*)</pattern>
-
-      <pattern name="local_mat_init">\[..:..:......\] > Local matrix initialized in ${jube_pat_fp}s.</pattern>
-      <pattern name="scaling_time">\[..:..:......\] > Time to scale the matrix[" "]*:[" "]*${jube_pat_fp}s.</pattern>
-      <pattern name="partitioning">\[..:..:......\] > Time to partition the matrix[" "]*:[" "]*${jube_pat_fp}s.</pattern>
-      <pattern name="patoh">\[..:..:......\] Done with PaToH, time[" "]*:[" "]*${jube_pat_fp}s.</pattern>
-      <pattern name="partitioning_done">\[..:..:......\] Finished Partitioning, time[" "]*:[" "]*${jube_pat_fp}s.</pattern>
-      <pattern name="partitioning_init">\[..:..:......\] Initialization time[" "]*:[" "]*${jube_pat_fp}</pattern>
-      <pattern name="partitions_created">\[..:..:......\] Partitions created in[" "]*:[" "]*${jube_pat_fp}s.</pattern>
-      <pattern name="preprocessing">\[..:..:......\] > Total time to preprocess[" "]*:[" "]*${jube_pat_fp}s.</pattern>
-      <pattern name="facto">\[..:..:......\] Factorization time[" "]*:[" "]*${jube_pat_fp}</pattern>
-
-      <pattern name="bcg_iterations">\[..:..:......\] BCG Iterations[" "]*:[" "]*${jube_pat_int}</pattern>
-      <pattern name="bcg">\[..:..:......\] BCG TIME[" "]*:[" "]*${jube_pat_fp}</pattern>
-      <pattern name="projections_sum">\[..:..:......\] SumProject time[" "]*:[" "]*${jube_pat_fp}</pattern>
-      <pattern name="error_compute">\[..:..:......\] Rho Computation time[" "]*:[" "]*${jube_pat_fp}</pattern>
-
-      <pattern name="bcg_rho">\[..:..:......\] BCG Rho[" "]*:[" "]*${jube_pat_fp}</pattern>
-      <pattern name="bwd_error">\[..:..:......\] Backward error[" "]*:[" "]*${jube_pat_fp}</pattern>
-      <pattern name="residual">\[..:..:......\] \|\|r\|\|_inf[" "]*:[" "]*${jube_pat_fp}</pattern>
-      <pattern name="scaled_residual">\[..:..:......\] \|\|r\|\|_inf/\|\|b\|\|_inf[" "]*:[" "]*${jube_pat_fp}</pattern>
+      <pattern name="analysis" type="float">[" "]*ELAPSED TIME IN ANALYSIS DRIVER=[" "]*${jube_pat_fp}</pattern>
     </patternset>
 
     <analyser name="analyse_output">
@@ -166,49 +186,26 @@
         <file use="pattern_output">execute/job_fp.out</file> <!-- file which should be scanned -->
       </analyse>
     </analyser>
-
+    
     <result name="result_output">
       <use>analyse_output</use> <!-- use existing analyser -->
       <table name="table_output" style="pretty">
-        <column title="id">jube_wp_id</column>
+        <column title="jube_run_id">jube_wp_id</column>
         <column>mode</column>
-        <column title="#MPI">tasks</column>
-        <column title="#OpenMP">threadspertask</column>
-	<column title="Matrix">matrix</column>
-	<column title="Matrix Scaling(s)">scaling_time</column>
-	<column title="Partitioning(s)">partitioning</column>
-	<column title="Preprocessing(s)">preprocessing</column>
-	<column title="Factorization(s)">"facto</column>
-	<column title="BCG #Iterations">bcg_iterations</column>
-	<column title="BCG(s)">bcg</column>
-	<column title="Projections Sum(s)">projections_sum</column>
-	<column title="Backward Error">bwd_error</column>
-	<column title="Scaled Residual">scaled_residual</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
       </table>
       <table name="table_output_csv" type="csv">
-        <column title="id">jube_wp_id</column>
+        <column>jube_wp_id</column>
         <column>mode</column>
-        <column title="#MPI">tasks</column>
-        <column title="#OpenMP">threadspertask</column>
-	<column title="Matrix">matrix</column>
-	<column title="Local Matrix Init(s)">local_mat_init</column>
-	<column title="Matrix Scaling(s)">scaling_time</column>
-	<column title="Partitioning(s)">partitioning</column>
-	<column title="PaToH(s)">patoh</column>
-	<column title="Partitioning done(s)">partitioning_done</column>
-	<column title="Init Partitioning(s)">partitioning_init</column>
-	<column title="Partitions Created(s)">partitions_created</column>
-	<column title="Preprocessing(s)">preprocessing</column>
-	<column title="Factorization(s)">"facto</column>
-	<column title="BCG #Iterations">bcg_iterations</column>
-	<column title="BCG(s)">bcg</column>
-	<column title="Projections Sum(s)">projections_sum</column>
-	<column title="Error Computation(s)">error_compute</column>
-	<column title="BCG Rho">bcg_rho</column>
-	<column title="Backward Error">bwd_error</column>
-	<column title="Residual">residual</column>
-	<column title="Scaled Residual">scaled_residual</column>
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>threadspertask</column>
+        <column>analysis</column>
       </table>
     </result>
+
   </benchmark>
 </jube>

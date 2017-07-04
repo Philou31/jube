@@ -13,10 +13,10 @@
         <parameter name="input_files" tag="mpmc_big">-A /scratch/algo/leleux/data/SHEMAT-Suite/mpmc/big/jac.mm -B /scratch/algo/leleux/data/SHEMAT-Suite/mpmc/big/F.mm</parameter>
         <parameter name="input_files" tag="fine7">-A /scratch/algo/leleux/data/SHEMAT-Suite/LSSC17-b/fine7/jac.mm -B /scratch/algo/leleux/data/SHEMAT-Suite/LSSC17-b/fine7/F.mm</parameter>
         <parameter name="input_files" tag="fine8">-A /scratch/algo/leleux/data/SHEMAT-Suite/LSSC17-b/fine8/jac.mm -B /scratch/algo/leleux/data/SHEMAT-Suite/LSSC17-b/fine8/F.mm</parameter>
-        <parameter name="input_files" tag="MHD10">-A /scratch/algo/leleux/data/MHD/10/A.txt -B /scratch/algo/leleux/data/MHD/10/RHS.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="MHD50">-A /scratch/algo/leleux/data/MHD/50/A.txt -B /scratch/algo/leleux/data/MHD/50/RHS.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="MHD100">-A /scratch/algo/leleux/data/MHD/100/A.txt -B /scratch/algo/leleux/data/MHD/100/RHS.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="MHD150">-A /scratch/algo/leleux/data/MHD/150/A.txt -B /scratch/algo/leleux/data/MHD/150/RHS.txt --symmetry 2</parameter>
+        <parameter name="input_files" tag="MHD10">-A /scratch/algo/leleux/data/MHD/10/A.txt -B /scratch/algo/leleux/data/MHD/10/RHS.txt</parameter>
+        <parameter name="input_files" tag="MHD50">-A /scratch/algo/leleux/data/MHD/50/A.txt -B /scratch/algo/leleux/data/MHD/50/RHS.txt</parameter>
+        <parameter name="input_files" tag="MHD100">-A /scratch/algo/leleux/data/MHD/100/A.txt -B /scratch/algo/leleux/data/MHD/100/RHS.txt</parameter>
+        <parameter name="input_files" tag="MHD150">-A /scratch/algo/leleux/data/MHD/150/A.txt -B /scratch/algo/leleux/data/MHD/150/RHS.txt</parameter>
         <parameter name="input_files" tag="HHG_laplace_A">-A /scratch/algo/leleux/data/coarsesolverHHG/examples/matrices/laplace/matAlaplace.output</parameter>
         <parameter name="input_files" tag="HHG_stokes_A">-A /scratch/algo/leleux/data/coarsesolverHHG/examples/matrices/stokes/matA.output</parameter>
         <parameter name="input_files" tag="HHG_rad8tan8_A">-A /scratch/algo/leleux/data/coarsesolverHHG/examples/matrices/rad8tan8/matA.output</parameter>
@@ -26,14 +26,22 @@
         <parameter name="input_files" tag="HHG_rad8tan8">-A /scratch/algo/leleux/data/coarsesolverHHG/examples/matrices/rad8tan8/global_mat.output --zeros=258786</parameter>
         <parameter name="input_files" tag="HHG_rad8tan16">-A /scratch/algo/leleux/data/coarsesolverHHG/examples/matrices/rad8tan16/global_mat.output --zeros=258786</parameter>
         <parameter name="input_files" tag="TOKAM3X_inertia_divertor">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_divertor.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_divertor.txt</parameter>
-        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_big">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_big.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_big.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_medium">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_medium.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_medium.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_small">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_small.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_small.txt --symmetry 2</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_big">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_big.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_big.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_medium">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_medium.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_medium.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_inertia_limiter_small">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_inertia_limiter_small.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_inertia_limiter_small.txt</parameter>
         <parameter name="input_files" tag="TOKAM3X_noinertia_divertor">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_divertor.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_divertor.txt</parameter>
-        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_big">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_big.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_big.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_medium">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_medium.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_medium.txt --symmetry 2</parameter>
-        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_small">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_small.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_small.txt --symmetry 2</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_big">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_big.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_big.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_medium">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_medium.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_medium.txt</parameter>
+        <parameter name="input_files" tag="TOKAM3X_noinertia_limiter_small">-A /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_mat_noinertia_limiter_small.txt -B /scratch/algo/leleux/data/TOKAM3X/TOKAM3X_rhs_noinertia_limiter_small.txt</parameter>
         <parameter name="input_files" tag="cage14">-A /scratch/algo/leleux/data/ABCD/cage14/cage14.mtx</parameter>
         <parameter name="input_files" tag="bayer01">-A /scratch/algo/leleux/data/ABCD/bayer01/bayer01.mtx</parameter>
+        <parameter name="input_files" tag="cage13">-A /scratch/algo/leleux/data/ABCD/cage13/cage13.mtx</parameter>
+        <parameter name="input_files" tag="gre_1107">-A /scratch/algo/leleux/data/ABCD/gre_1107/gre_1107.mtx</parameter>
+        <parameter name="input_files" tag="Hamrle3">-A /scratch/algo/leleux/data/ABCD/Hamrle3/Hamrle3.mtx -B /scratch/algo/leleux/data/ABCD/Hamrle3/Hamrle3_b.mtx</parameter>
+        <parameter name="input_files" tag="lhr71c">-A /scratch/algo/leleux/data/ABCD/lhr71c/lhr71c.mtx</parameter>
+        <parameter name="input_files" tag="torso3">-A /scratch/algo/leleux/data/ABCD/torso3/torso3.mtx</parameter>
+        <parameter name="input_files" tag="Xiaoye31">-A /scratch/algo/leleux/data/Xiaoye/31/matrix31.dat</parameter>
+        <parameter name="input_files" tag="Xiaoye41">-A /scratch/algo/leleux/data/Xiaoye/41/matrix41.dat</parameter>
+        <parameter name="input_files" tag="Xiaoye61">-A /scratch/algo/leleux/data/Xiaoye/61/matrix61.dat</parameter>
   </parameterset>
 </jube>

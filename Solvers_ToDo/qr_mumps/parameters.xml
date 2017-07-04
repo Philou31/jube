@@ -9,14 +9,10 @@
 	<parameter name="arguments" tag="default_par">--ic13=1 --ic28=2 --ic29=0</parameter>
 	<parameter name="error_analysis" tag="fullEA">--ic11=1</parameter>
 	<parameter name="error_analysis" tag="partEA">--ic11=2</parameter>
-	<parameter name="percent_relaxation" tag="relax_mem">--ic14=300</parameter>
+	<parameter name="percent_relaxation" tag="relax_mem">--ic14=40</parameter>
 	<parameter name="solution_distributed" tag="distribute_sol">--ic21=1</parameter>
 	<parameter name="out_of_core" tag="OOC">--ic22=1</parameter>
 	<parameter name="workspace_size" tag="spec_workspace">--ic23=3000</parameter>
-	<parameter name="BLR_epsilon">0.0001</parameter>
-	<parameter name="BLR_epsilon" tag="test_BLR_epsilon">1000000,100000,10000,1000,100,10,1,0.1,0.01,0.001,0.0001,0.00001,0.000001,0.0000001,0.00000001,0.000000001,0.0000000001,0.00000000001,0.000000000001,0.0000000000001,0.00000000000001,0.000000000000001,0.0000000000000001</parameter>
-	<parameter name="BLR" tag="BLR">--ic35=1 --c07=$BLR_epsilon</parameter>
-	<parameter name="iter_ref" tag="iter_ref">--ic10=-3</parameter>
-	<parameter name="working_host" tag="no_host">--working_host=0</parameter>
+	<parameter name="BLR" tag="BLR">--ic35=1 --c07=0.001</parameter>
   </parameterset>
 </jube>
